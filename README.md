@@ -57,4 +57,50 @@ except:
 ```
 
 ## Django configuration
-TBD
+```
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '%(levelname)s %(asctime)s %(module)s %(process)d %(thread)d %(message)s'
+        },
+        'json': {
+            'format': '{ "loggerName":"%(name)s", "functionName":"%(funcName)s", "lineNo":"%(lineno)d", "levelName":"%(levelname)s", "message":"%(message)s"}'
+        }
+    },
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+            'level': 'DEBUG',
+            'formatter': 'verbose'
+        },
+        'logzio': {
+            'class': 'logzio.handler.LogzioHandler',
+            'level': 'INFO',
+            'formatter': 'json',
+            'token': 'token',
+            'logs_drain_count': 10,
+            'logs_drain_timeout': 5,
+            'logzio_type': "django"
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console', ],
+            'level': os.getenv('DJANGO_LOG_LEVEL', 'INFO')
+        },
+        'appname': {
+            'handlers': ['console', 'logzio'],
+            'level': 'INFO'
+        }
+    }
+}
+
+```
+*Change*
+- token - Your logzio token
+- logs_drain_count - Number of logs to keep in buffer before draining
+- logs_drain_timeout - Time to wait before draining, regardless of the previouse setting
+- logzio_type - Log type, for searching in logz.io (defaults to "python")
+- appname - Your django app
