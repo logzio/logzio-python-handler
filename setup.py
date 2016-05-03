@@ -16,7 +16,6 @@ setup(
         "requests"
     ],
     include_package_data=True,
-    platform='any',
     classifiers=[
         'Development Status :: 4 - Beta',
         'Intended Audience :: Developers',

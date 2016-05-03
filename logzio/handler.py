@@ -125,10 +125,23 @@ class LogzioHandler(logging.Handler):
 
         return return_json
 
+    def backup_logs(self, logs):
+        timestamp = datetime.datetime.now().strftime("%d%m%Y-%H%M%S")
+        print("Backing up your logs to logzio-failures-{0}.txt".format(timestamp))
+        with open("logzio-failures-{0}.txt".format(timestamp), "a") as f:
+            f.writelines('\n'.join(logs))
+
     def drain_messages(self):
         try:
             self.buffer_event.clear()
             self.drain_lock.acquire()
+
+            # Copy buffer
+            temp_logs = list(self.logs)
+            self.logs = []
+
+            # Release the event
+            self.buffer_event.set()
 
             # Not configurable from the outside
             sleep_between_retries = 2000
@@ -138,18 +151,28 @@ class LogzioHandler(logging.Handler):
             headers = {"Content-type": "text/plain"}
 
             for current_try in range(number_of_retries):
-                response = requests.post(self.url, headers=headers, data='\n'.join(self.logs))
+                response = requests.post(self.url, headers=headers, data='\n'.join(temp_logs))
 
-                if response.status_code != 200:
+                if response.status_code != 200:  # 429 400, on 400 print stdout
+                    if response.status_code == 400:
+
+                        print("Got unexpected 400 code from logz.io, response: {0}".format(response.text))
+                        self.backup_logs(temp_logs)
+
+                    if response.status_code == 401:
+                        print("You are not authorized with logz.io! dropping..")
+                        break
+
                     sleep(sleep_between_retries)
                     sleep_between_retries *= 2
                 else:
                     success_in_send = True
                     break
 
-            if success_in_send:  # Only clear the logs from the buffer if we managed to send them
-                # Clear the buffer
-                self.logs = []
+            if not success_in_send:
+
+                # Write to file
+                self.backup_logs(temp_logs)
 
         finally:
             self.buffer_event.set()
@@ -157,5 +180,3 @@ class LogzioHandler(logging.Handler):
 
     def emit(self, record):
         self.add_to_buffer(self.format_message(record))
-
-
