@@ -1,3 +1,5 @@
+[![PyPI version](https://badge.fury.io/py/logzio-python-handler.svg)](https://badge.fury.io/py/logzio-python-handler)
+
 # The Logz.io Python Handler
 This is a Python handler that sends logs in bulk over HTTPS to Logz.io. The handler uses an internal buffer, and you can choose the drain timeout as well as the number of messages to hold in the queue before the drain. Everything works in threads, so if the main program exists, the threads will continue to work until all logs are drained.
 
