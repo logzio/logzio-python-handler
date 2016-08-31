@@ -39,7 +39,7 @@ format={ "loggerName":"%(name)s", "functionName":"%(funcName)s", "lineNo":"%(lin
  - Number of logs to keep in buffer before draining
  - Time to wait before draining, regardless of the previouse setting
  - Log type, for searching in logz.io (defaults to "python")
- - Logz.io Listener address (defaults to "https://listener.logz.io:8071/")
+ - Logz.io Listener address (defaults to "https://listener.logz.io:8071")
 
 #### Code Example
 ```python
@@ -83,7 +83,7 @@ LOGGING = {
             'level': 'INFO',
             'formatter': 'json',
             'token': 'token',
-            'url': 'https://listener.logz.io:8071/'
+            'url': 'https://listener.logz.io:8071'
             'logs_drain_count': 10,
             'logs_drain_timeout': 5,
             'logzio_type': "django"
