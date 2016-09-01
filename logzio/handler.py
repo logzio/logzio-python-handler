@@ -24,7 +24,7 @@ class LogzioHandler(logging.Handler):
     drain_lock = Lock()
 
     def __init__(self, token, logs_drain_count=100, logs_drain_timeout=10,
-                 logzio_type="python", url="https://listener.logz.io:8071/"):
+                 logzio_type="python", url="https://listener.logz.io:8071"):
 
         if token is "":
             raise Exception("Logz.io Token must be provided")
@@ -33,7 +33,7 @@ class LogzioHandler(logging.Handler):
         self.logs_drain_count = logs_drain_count
         self.logs_drain_timeout = logs_drain_timeout
         self.logzio_type = logzio_type
-        self.url = "{0}?token={1}".format(url, token)
+        self.url = "{0}/?token={1}".format(url, token)
 
         self.is_main_thread_active = lambda: any((i.name == "MainThread") and i.is_alive() for i in enumerate())
 
