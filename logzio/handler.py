@@ -102,14 +102,16 @@ class LogzioHandler(logging.Handler):
             self.logs_counter_condition.release()
 
     def handle_exceptions(self, message):
-        if message.exc_info:
-            return '\n'.join(traceback.format_exception(*message.exc_info))
-        else:
-            return message.getMessage()
+        message = '\n'.join(traceback.format_exception(*message.exc_info))
+
+    def format(self, record):
+        message = super(LogzioHandler, self).format(record)
+        try:
+            return json.loads(message)
+        except TypeError:
+            return message
 
     def format_message(self, message):
-
-        message_field = self.handle_exceptions(message)
         now = datetime.datetime.utcnow()
         timestamp = now.strftime("%Y-%m-%dT%H:%M:%S") + ".%03d" % (now.microsecond / 1000) + "Z"
 
@@ -118,10 +120,18 @@ class LogzioHandler(logging.Handler):
             "line_number": message.lineno,
             "path_name": message.pathname,
             "log_level": message.levelname,
-            "message": message_field,
             "type": self.logzio_type,
             "@timestamp": timestamp
         }
+
+        if message.exc_info:
+            return_json["message"] = self.handle_exceptions(message)
+        else:
+            formatted_message = self.format(message)
+            if isinstance(formatted_message, dict):
+                return_json.update(formatted_message)
+            else:
+                return_json["message"] = formatted_message
 
         return return_json
 
