@@ -4,6 +4,7 @@ import requests
 import traceback
 import datetime
 import json
+import os
 
 from threading import Event, Thread, Condition, Lock, enumerate
 from time import sleep
@@ -101,15 +102,15 @@ class LogzioHandler(logging.Handler):
             # Release the condition
             self.logs_counter_condition.release()
 
-    def handle_exceptions(self, message):
-        message = '\n'.join(traceback.format_exception(*message.exc_info))
-
     def format(self, record):
         message = super(LogzioHandler, self).format(record)
         try:
             return json.loads(message)
-        except TypeError:
+        except (TypeError, ValueError):
             return message
+
+    def formatException(self, exc_info):
+        return '\n'.join(traceback.format_exception(*exc_info))
 
     def format_message(self, message):
         now = datetime.datetime.utcnow()
@@ -125,7 +126,7 @@ class LogzioHandler(logging.Handler):
         }
 
         if message.exc_info:
-            return_json["message"] = self.handle_exceptions(message)
+            return_json["message"] = self.formatException(message.exc_info)
         else:
             formatted_message = self.format(message)
             if isinstance(formatted_message, dict):
