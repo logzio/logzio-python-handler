@@ -155,24 +155,27 @@ class LogzioHandler(logging.Handler):
             self.buffer_event.set()
 
             # Not configurable from the outside
-            sleep_between_retries = 2000
+            sleep_between_retries = 2
             number_of_retries = 4
 
             success_in_send = False
             headers = {"Content-type": "text/plain"}
 
             for current_try in range(number_of_retries):
-                response = requests.post(self.url, headers=headers, data='\n'.join(temp_logs))
+                try:
+                    response = requests.post(self.url, headers=headers, data='\n'.join(temp_logs))
 
-                if response.status_code != 200:  # 429 400, on 400 print stdout
-                    if response.status_code == 400:
+                    if response.status_code != 200:  # 429 400, on 400 print stdout
+                        if response.status_code == 400:
 
-                        print("Got unexpected 400 code from logz.io, response: {0}".format(response.text))
-                        self.backup_logs(temp_logs)
+                            print("Got unexpected 400 code from logz.io, response: {0}".format(response.text))
+                            self.backup_logs(temp_logs)
 
-                    if response.status_code == 401:
-                        print("You are not authorized with logz.io! dropping..")
-                        break
+                        if response.status_code == 401:
+                            print("You are not authorized with logz.io! dropping..")
+                            break
+                except Exception as e:
+                    print("Got exception while sending logs to Logz.io, Try ({}/{}). Message: {}".format(current_try + 1, number_of_retries, e.message))
 
                     sleep(sleep_between_retries)
                     sleep_between_retries *= 2
@@ -181,7 +184,6 @@ class LogzioHandler(logging.Handler):
                     break
 
             if not success_in_send:
-
                 # Write to file
                 self.backup_logs(temp_logs)
 
