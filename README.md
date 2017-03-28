@@ -1,9 +1,12 @@
 [![PyPI version](https://badge.fury.io/py/logzio-python-handler.svg)](https://badge.fury.io/py/logzio-python-handler)
 
 # The Logz.io Python Handler
-This is a Python handler that sends logs in bulk over HTTPS to Logz.io. The handler uses an internal buffer, and you can choose the drain timeout as well as the number of messages to hold in the queue before the drain. Everything works in threads, so if the main program exists, the threads will continue to work until all logs are drained.
-
-**This is in BETA. We currently use this handler internally. We will provide tests soon**
+This is a Python handler that sends logs in bulk over HTTPS to Logz.io.  
+The handler uses a subclass named LogzioSender (which can be used without this handler as well, to ship raw data).  
+The LogzioSender class opens a new Thread, that consumes from the logs queue. Each iteration (its frequency of which can be configured by the logs_drain_timeout parameter), will try to consume the queue in its entirety.  
+Logs will get divided into separate bulks, based on their size.  
+LogzioSender will check if the main thread is alive. In case the main thread quits, it will try to consume the queue one last time, and then exit. So your program can hang for a few seconds, until the logs are drained.  
+In case the logs failed to be sent to Logz.io after a couple of tries, they will be written to the local file system. You can later upload them to Logz.io using curl.
 
 ## Installation
 ```bash
@@ -18,11 +21,11 @@ keys=LogzioHandler
 
 [handler_LogzioHandler]
 class=logzio.handler.LogzioHandler
-formatter=jsonFormat
-args=('token', 10, 20)
+formatter=logzioFormat
+args=('token', 'my_type')
 
 [formatters]
-keys=jsonFormat
+keys=logzioFormat
 
 [loggers]
 keys=root
@@ -31,15 +34,18 @@ keys=root
 handlers=LogzioHandler
 level=INFO
 
-[formatter_jsonFormat]
-format={ "loggerName":"%(name)s", "functionName":"%(funcName)s", "lineNo":"%(lineno)d", "levelName":"%(levelname)s", "message":"%(message)s"}
+[formatter_logzioFormat]
+format={"additional_field": "value"}
 ```
 *args=() arguments, by order*
  - Your logz.io token
- - Number of logs to keep in buffer before draining
- - Time to wait before draining, regardless of the previouse setting
  - Log type, for searching in logz.io (defaults to "python")
+ - Time to sleep between draining attempts (defaults to "3")
  - Logz.io Listener address (defaults to "https://listener.logz.io:8071")
+ - Debug flag. Set to True, will print debug messages to stdout. (defaults to "False")
+ 
+ Please note, that you have to configure those parameters by this exact order.  
+ i.e. you cannot set Debug to true, without configuring all of the previous parameters as well.
 
 #### Code Example
 ```python
@@ -68,8 +74,8 @@ LOGGING = {
         'verbose': {
             'format': '%(levelname)s %(asctime)s %(module)s %(process)d %(thread)d %(message)s'
         },
-        'json': {
-            'format': '{ "loggerName":"%(name)s", "functionName":"%(funcName)s", "lineNo":"%(lineno)d", "levelName":"%(levelname)s", "message":"%(message)s"}'
+        'logzioFormat': {
+            'format': '{"additional_field": "value"}'
         }
     },
     'handlers': {
@@ -81,12 +87,12 @@ LOGGING = {
         'logzio': {
             'class': 'logzio.handler.LogzioHandler',
             'level': 'INFO',
-            'formatter': 'json',
+            'formatter': 'logzioFormat',
             'token': 'token',
-            'url': 'https://listener.logz.io:8071'
-            'logs_drain_count': 10,
+            'logzio_type': "django",
             'logs_drain_timeout': 5,
-            'logzio_type': "django"
+            'url': 'https://listener.logz.io:8071',
+            'debug': True
         },
     },
     'loggers': {
@@ -109,3 +115,11 @@ LOGGING = {
 - logs_drain_timeout - Time to wait before draining, regardless of the previouse setting
 - logzio_type - Log type, for searching in logz.io (defaults to "python")
 - appname - Your django app
+
+## Release Notes
+- 2.0.0 - Production, stable release. 
+    - *BREAKING* - Configuration option logs_drain_count was removed, and the order of the parameters has changed for better simplicity. Please review the parameters section above.
+    - Introducing the LogzioSender class, which is generic and can be used without the handler wrap to ship raw data to Logz.io. Just create a new instance of the class, and use the append() method.
+    - Simplifications and Robustness
+    - Full testing framework
+- 1.X - Beta versions
