@@ -92,7 +92,7 @@ class LogzioSender:
                                 break
 
                         except Exception as e:
-                            print("Got exception while sending logs to Logz.io, Try ({}/{}). Message: {}".format(current_try + 1, number_of_retries, e.message))
+                            print("Got exception while sending logs to Logz.io, Try ({}/{}). Message: {}".format(current_try + 1, number_of_retries, e))
                             should_retry = True
 
                         if should_retry:
