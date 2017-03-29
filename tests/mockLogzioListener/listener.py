@@ -41,7 +41,7 @@ class ListenerHandler(BaseHTTPRequestHandler):
 
 class MockLogzioListener:
     def __init__(self):
-        self.port = find_available_port()
+        self.port = _find_available_port()
         self.host = "localhost"
 
         self.server = HTTPServer((self.host, self.port), ListenerHandler)
@@ -82,7 +82,7 @@ class MockLogzioListener:
         self.persistent_flags.clear_server_error()
 
 
-def find_available_port():
+def _find_available_port():
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     sock.bind(("", 0))
     sock.listen(1)
