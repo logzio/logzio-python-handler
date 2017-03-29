@@ -4,9 +4,12 @@ import requests
 import json
 from threading import Thread, enumerate
 from datetime import datetime
-from Queue import Queue
 from time import sleep
 
+if sys.version[0] == '2':
+    import Queue as queue
+else:
+    import queue as queue
 
 MAX_BULK_SIZE_IN_BYTES = 3 * 1024 * 1024  # 3 MB
 
@@ -29,7 +32,7 @@ class LogzioSender:
         self.is_main_thread_active = lambda: any((i.name == "MainThread") and i.is_alive() for i in enumerate())
 
         # Create a queue to hold logs
-        self.queue = Queue()
+        self.queue = queue.Queue()
 
         self.sending_thread = Thread(target=self._drain_queue)
         self.sending_thread.daemon = False

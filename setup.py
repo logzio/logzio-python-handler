@@ -15,6 +15,9 @@ setup(
     install_requires=[
         "requests"
     ],
+    test_requires=[
+        "future"
+    ],
     include_package_data=True,
     classifiers=[
         'Development Status :: 5 - Production/Stable',

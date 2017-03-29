@@ -1,5 +1,8 @@
+# noinspection PyUnresolvedReferences
+import future
 import socket
-from BaseHTTPServer import BaseHTTPRequestHandler, HTTPServer
+
+from http.server import BaseHTTPRequestHandler, HTTPServer
 from threading import Thread
 from .logsList import logs_list
 from .persistentFlags import persistent_flags
