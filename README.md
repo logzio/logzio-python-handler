@@ -20,6 +20,7 @@ Travis CI will build this handler and test against:
   - "3.4"
   - "3.5"
   - "3.6"
+  
 We can't ensure compatibility to any other version, as we can't test it automatically.
 
 ## Python configuration
