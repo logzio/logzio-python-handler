@@ -1,18 +1,17 @@
-import ast
-import unittest
-import logging
-import sys
-import re
 import os
+from unittest import TestCase
+
+import logging
+
+import sys
+
+import re
 from logzio.handler import LogzioHandler
 
-def dummy_drain_messages():
-    pass
 
-class TestHandler(unittest.TestCase):
+class TestLogzioHandler(TestCase):
     def setUp(self):
         self.handler = LogzioHandler('moo')
-        self.handler.drain_messages = dummy_drain_messages;
 
     def test_json(self):
         formatter = logging.Formatter(
@@ -79,7 +78,6 @@ class TestHandler(unittest.TestCase):
         )
 
     def test_exc(self):
-        exc_info = None
         try:
             raise ValueError("oops.")
         except:
@@ -99,8 +97,8 @@ class TestHandler(unittest.TestCase):
         formatted_message = self.handler.format_message(record)
         formatted_message["@timestamp"] = None
 
-        formatted_message["message"] = formatted_message["message"].replace(os.path.abspath(__file__), "")
-        formatted_message["message"] = re.sub(r", line \d+", "", formatted_message["message"])
+        formatted_message["exception"] = formatted_message["exception"].replace(os.path.abspath(__file__), "")
+        formatted_message["exception"] = re.sub(r", line \d+", "", formatted_message["exception"])
 
         self.assertDictEqual(
             {
@@ -108,12 +106,11 @@ class TestHandler(unittest.TestCase):
                 'line_number': 10,
                 'log_level': 'NOTSET',
                 'logger': 'my-logger',
-                'message': 'Traceback (most recent call last):\n\n  File "", in test_exc\n    raise ValueError("oops.")\n\nValueError: oops.\n',
+                'message': 'this is a test: moo.',
+                'exception': 'Traceback (most recent call last):\n\n  File "", in test_exc\n    raise ValueError("oops.")\n\nValueError: oops.\n',
                 'path_name': 'handler_test.py',
                 'type': 'python'
             },
             formatted_message
         )
 
-if __name__ == '__main__':
-    unittest.main()
