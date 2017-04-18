@@ -127,6 +127,7 @@ LOGGING = {
 - appname - Your django app
 
 ## Release Notes
+- 2.0.1 - Added __all__ to __init__.py, so support * imports
 - 2.0.0 - Production, stable release. 
     - *BREAKING* - Configuration option logs_drain_count was removed, and the order of the parameters has changed for better simplicity. Please review the parameters section above.
     - Introducing the LogzioSender class, which is generic and can be used without the handler wrap to ship raw data to Logz.io. Just create a new instance of the class, and use the append() method.
