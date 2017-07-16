@@ -127,6 +127,7 @@ LOGGING = {
 - appname - Your django app
 
 ## Release Notes
+- 2.0.2 - Support for formatted messages (Thanks @johnraz!)
 - 2.0.1 - Added __all__ to __init__.py, so support * imports
 - 2.0.0 - Production, stable release. 
     - *BREAKING* - Configuration option logs_drain_count was removed, and the order of the parameters has changed for better simplicity. Please review the parameters section above.
