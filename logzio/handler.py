@@ -39,7 +39,7 @@ class LogzioHandler(logging.Handler):
             "path_name": message.pathname,
             "log_level": message.levelname,
             "type": self.logzio_type,
-            "message": message.msg,
+            "message": message.getMessage(),
             "@timestamp": timestamp
         }
 

@@ -77,6 +77,34 @@ class TestLogzioHandler(TestCase):
              }
         )
 
+    def test_format_string_message(self):
+        record = logging.LogRecord(
+            name='my-logger',
+            level=0,
+            pathname='handler_test.py',
+            lineno=10,
+            msg="this is a test: %s.",
+            args=('moo',),
+            exc_info=None,
+            func='test_json'
+        )
+
+        formatted_message = self.handler.format_message(record)
+        formatted_message["@timestamp"] = None
+
+        self.assertDictEqual(
+            formatted_message,
+            {
+                '@timestamp': None,
+                'line_number': 10,
+                'log_level': 'NOTSET',
+                'logger': 'my-logger',
+                'message': 'this is a test: moo.',
+                'path_name': 'handler_test.py',
+                'type': 'python'
+             }
+        )
+
     def test_exc(self):
         try:
             raise ValueError("oops.")
