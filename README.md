@@ -127,6 +127,7 @@ LOGGING = {
 - appname - Your django app
 
 ## Release Notes
+- 2.0.3 - Fix bug that consumed more logs while draining than Logz.io's bulk limit
 - 2.0.2 - Support for formatted messages (Thanks @johnraz!)
 - 2.0.1 - Added __all__ to __init__.py, so support * imports
 - 2.0.0 - Production, stable release. 

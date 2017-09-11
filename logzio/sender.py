@@ -11,7 +11,7 @@ if sys.version[0] == '2':
 else:
     import queue as queue
 
-MAX_BULK_SIZE_IN_BYTES = 3 * 1024 * 1024  # 3 MB
+MAX_BULK_SIZE_IN_BYTES = 1 * 1024 * 1024  # 1 MB
 
 
 def backup_logs(logs):
@@ -112,8 +112,11 @@ class LogzioSender:
 
     def _get_messages_up_to_max_allowed_size(self):
         logs_list = []
+        current_size = 0
         while not self.queue.empty():
-            logs_list.append(self.queue.get())
-            if sys.getsizeof(logs_list) >= MAX_BULK_SIZE_IN_BYTES:
+            current_log = self.queue.get()
+            current_size += sys.getsizeof(current_log)
+            logs_list.append(current_log)
+            if current_size >= MAX_BULK_SIZE_IN_BYTES:
                 break
         return logs_list
