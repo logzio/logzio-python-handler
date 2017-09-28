@@ -73,7 +73,7 @@ class LogzioSender:
                         should_retry = False
                         try:
                             response = requests.post(self.url, headers=headers, data='\n'.join(logs_list))
-                            if response.status_code != 200:
+                            if response.status_code not in [200, 201]:
                                 if response.status_code == 400:
                                     print("Got 400 code from Logz.io. This means that some of your logs are too big, or badly formatted. response: {0}".format(response.text))
                                     should_backup_to_disk = False
