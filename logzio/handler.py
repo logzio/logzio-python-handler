@@ -3,6 +3,7 @@ import json
 import logging
 import logging.handlers
 import traceback
+import sys
 
 from .sender import LogzioSender
 
@@ -18,6 +19,31 @@ class LogzioHandler(logging.Handler):
 
         self.logzio_sender = LogzioSender(token=token, url=url, logs_drain_timeout=logs_drain_timeout, debug=debug)
         logging.Handler.__init__(self)
+
+    def extra_fields(self, message):
+
+        not_allowed_keys = (
+            'args', 'asctime', 'created', 'exc_info', 'exc_text', 'filename',
+            'funcName', 'levelname', 'levelno', 'lineno', 'module',
+            'msecs', 'msecs', 'message', 'msg', 'name', 'pathname', 'process',
+            'processName', 'relativeCreated', 'thread', 'threadName')
+
+
+        if sys.version_info < (3, 0):
+            var_type = (basestring, bool, dict, float, int, long, list, type(None))
+        else:
+            var_type = (str, bool, dict, float, int, list, type(None))
+
+        extra_fields = {}
+
+        for key, value in message.__dict__.items():
+            if key not in not_allowed_keys:
+                if isinstance(value, var_type):
+                    extra_fields[key] = value
+                else:
+                    extra_fields[key] = repr(value)
+
+        return extra_fields
 
     def format(self, record):
         message = super(LogzioHandler, self).format(record)
@@ -47,12 +73,16 @@ class LogzioHandler(logging.Handler):
             return_json["exception"] = self.format_exception(message.exc_info)
         else:
             formatted_message = self.format(message)
+
+            return_json.update(self.extra_fields(message))
+
             if isinstance(formatted_message, dict):
                 return_json.update(formatted_message)
             else:
                 return_json["message"] = formatted_message
 
         return return_json
+
 
     def emit(self, record):
         self.logzio_sender.append(self.format_message(record))
