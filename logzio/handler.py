@@ -23,11 +23,10 @@ class LogzioHandler(logging.Handler):
     def extra_fields(self, message):
 
         not_allowed_keys = (
-            'args', 'asctime', 'created', 'exc_info', 'exc_text', 'filename',
+            'args', 'asctime', 'created', 'exc_info', 'stack_info', 'exc_text', 'filename',
             'funcName', 'levelname', 'levelno', 'lineno', 'module',
             'msecs', 'msecs', 'message', 'msg', 'name', 'pathname', 'process',
             'processName', 'relativeCreated', 'thread', 'threadName')
-
 
         if sys.version_info < (3, 0):
             var_type = (basestring, bool, dict, float, int, long, list, type(None))
@@ -83,6 +82,6 @@ class LogzioHandler(logging.Handler):
 
         return return_json
 
-
     def emit(self, record):
         self.logzio_sender.append(self.format_message(record))
+
