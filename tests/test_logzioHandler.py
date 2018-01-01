@@ -77,6 +77,38 @@ class TestLogzioHandler(TestCase):
              }
         )
 
+    def test_extra_formatting(self):
+        record = logging.LogRecord(
+            name='my-logger',
+            level=0,
+            pathname='handler_test.py',
+            lineno=10,
+            msg="this is a test: moo.",
+            args=[],
+            exc_info=None,
+            func='test_json'
+        )
+
+        record.__dict__["extra_key"] = "extra_value"
+        record.__dict__["module"] = "testing"
+
+        formatted_message = self.handler.format_message(record)
+        formatted_message["@timestamp"] = None
+
+        self.assertDictEqual(
+            formatted_message,
+            {
+                '@timestamp': None,
+                'line_number': 10,
+                'log_level': 'NOTSET',
+                'logger': 'my-logger',
+                'message': 'this is a test: moo.',
+                'path_name': 'handler_test.py',
+                'type': 'python',
+                'extra_key': 'extra_value'
+             }
+        )
+
     def test_format_string_message(self):
         record = logging.LogRecord(
             name='my-logger',
