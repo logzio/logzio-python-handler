@@ -75,6 +75,17 @@ except:
     logger.exception("Supporting exceptions too!")
 ```
 
+#### Extra Fields
+In case you need to dynamic metadata to your logger, other then the constant metadata from the formatter, you can use the "extra" parameter.  
+All key values in the dictionary passed in "extra" will be presented in Logz.io as new fields in the log you are sending.  
+Please note, that you cannot override default fields by the python logger (i.e. lineno, thread, etc..)  
+For example:  
+
+
+```
+logger.info('Warning', extra={'extra_key':'extra_value'})
+```
+
 ## Django configuration
 ```
 LOGGING = {
@@ -127,6 +138,7 @@ LOGGING = {
 - appname - Your django app
 
 ## Release Notes
+- 2.0.5 - Support for extra fields
 - 2.0.4 - Publish package as source along wheel, and supprt python3 packagin (Thanks @cchristous!)
 - 2.0.3 - Fix bug that consumed more logs while draining than Logz.io's bulk limit
 - 2.0.2 - Support for formatted messages (Thanks @johnraz!)

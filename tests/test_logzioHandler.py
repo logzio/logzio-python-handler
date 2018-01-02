@@ -91,7 +91,6 @@ class TestLogzioHandler(TestCase):
 
         record.__dict__["extra_key"] = "extra_value"
         record.__dict__["module"] = "testing"
-
         formatted_message = self.handler.format_message(record)
         formatted_message["@timestamp"] = None
 
