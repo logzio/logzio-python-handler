@@ -134,7 +134,7 @@ LOGGING = {
 - url - Logz.io Listener address
 - logs_drain_count - Number of logs to keep in buffer before draining
 - logs_drain_timeout - Time to wait before draining, regardless of the previouse setting
-- logzio_type - Log type, for searching in logz.io (defaults to "python")
+- logzio_type - Log type, for searching in logz.io (defaults to "python"), it cannot contain a space.
 - appname - Your django app
 
 ## Release Notes
