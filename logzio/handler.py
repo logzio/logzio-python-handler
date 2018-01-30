@@ -44,6 +44,9 @@ class LogzioHandler(logging.Handler):
 
         return extra_fields
 
+    def flush(self):
+        self.logzio_sender._flush_queue()
+
     def format(self, record):
         message = super(LogzioHandler, self).format(record)
         try:
