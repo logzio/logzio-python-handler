@@ -9,6 +9,7 @@ from .sender import LogzioSender
 
 
 class LogzioHandler(logging.Handler):
+
     def __init__(self, token, logzio_type="python", logs_drain_timeout=3,
                  url="https://listener.logz.io:8071", debug=False):
 
@@ -87,4 +88,3 @@ class LogzioHandler(logging.Handler):
 
     def emit(self, record):
         self.logzio_sender.append(self.format_message(record))
-

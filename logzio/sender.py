@@ -22,6 +22,7 @@ def backup_logs(logs):
 
 
 class LogzioSender:
+
     def __init__(self, token, url="https://listener.logz.io:8071", logs_drain_timeout=5, debug=False):
         self.token = token
         self.url = "{0}/?token={1}".format(url, token)
