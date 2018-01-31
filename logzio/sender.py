@@ -44,6 +44,9 @@ class LogzioSender:
         # Queue lib is thread safe, no issue here
         self.queue.put(json.dumps(logs_message))
 
+    def flush(self):
+        self._flush_queue()
+
     def _debug(self, message):
         if self.debug:
             print(str(message))
@@ -58,7 +61,7 @@ class LogzioSender:
                 last_try = True
 
             try:
-                self._flush_the_queue()
+                self._flush_queue()
 
             except Exception as e:
                 self._debug("Unexpected exception while draining queue to Logz.io, swallowing. Exception: " + str(e))
@@ -66,7 +69,7 @@ class LogzioSender:
             if not last_try:
                 sleep(self.logs_drain_timeout)
 
-    def _flush_the_queue(self):
+    def _flush_queue(self):
         # Sending logs until queue is empty
         while not self.queue.empty():
             logs_list = self._get_messages_up_to_max_allowed_size()
