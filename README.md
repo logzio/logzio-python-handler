@@ -138,6 +138,7 @@ LOGGING = {
 - appname - Your django app
 
 ## Release Notes
+- 2.0.6 - Add "flush()" method to manually drain the queue (Thanks @orenmazor!)
 - 2.0.5 - Support for extra fields
 - 2.0.4 - Publish package as source along wheel, and supprt python3 packagin (Thanks @cchristous!)
 - 2.0.3 - Fix bug that consumed more logs while draining than Logz.io's bulk limit
