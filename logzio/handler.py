@@ -39,8 +39,9 @@ class LogzioHandler(logging.Handler):
             'processName', 'relativeCreated', 'thread', 'threadName')
 
         if sys.version_info < (3, 0):
-            var_type = (basestring, bool, dict, float,
-                        int, long, list, type(None))
+            # long and basestring don't exist in py3 so, NOQA
+            var_type = (basestring, bool, dict, float,  # NOQA
+                        int, long, list, type(None))  # NOQA
         else:
             var_type = (str, bool, dict, float, int, list, type(None))
 
