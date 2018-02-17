@@ -19,7 +19,7 @@ class LogzioHandler(logging.Handler):
                  debug=False):
 
         if token is "":
-            raise Exception("Logz.io Token must be provided")
+            raise LogzioException("Logz.io Token must be provided")
 
         self.logzio_type = logzio_type
 
