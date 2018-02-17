@@ -18,7 +18,7 @@ class LogzioHandler(logging.Handler):
                  url="https://listener.logz.io:8071",
                  debug=False):
 
-        if token is "":
+        if not token:
             raise LogzioException("Logz.io Token must be provided")
 
         self.logzio_type = logzio_type
