@@ -19,7 +19,7 @@ class LogzioHandler(logging.Handler):
                  debug=False):
 
         if not token:
-            raise LogzioException("Logz.io Token must be provided")
+            raise LogzioException('Logz.io Token must be provided')
 
         self.logzio_type = logzio_type
 
@@ -70,30 +70,29 @@ class LogzioHandler(logging.Handler):
 
     def format_message(self, message):
         now = datetime.datetime.utcnow()
-        timestamp = now.strftime("%Y-%m-%dT%H:%M:%S") + \
-            ".%03d" % (now.microsecond / 1000) + "Z"
+        timestamp = now.strftime('%Y-%m-%dT%H:%M:%S') + \
+            '.%03d' % (now.microsecond / 1000) + 'Z'
 
         return_json = {
-            "logger": message.name,
-            "line_number": message.lineno,
-            "path_name": message.pathname,
-            "log_level": message.levelname,
-            "type": self.logzio_type,
-            "message": message.getMessage(),
-            "@timestamp": timestamp
+            'logger': message.name,
+            'line_number': message.lineno,
+            'path_name': message.pathname,
+            'log_level': message.levelname,
+            'type': self.logzio_type,
+            'message': message.getMessage(),
+            '@timestamp': timestamp
         }
 
         if message.exc_info:
-            return_json["exception"] = self.format_exception(message.exc_info)
+            return_json['exception'] = self.format_exception(message.exc_info)
         else:
             formatted_message = self.format(message)
-
             return_json.update(self.extra_fields(message))
 
             if isinstance(formatted_message, dict):
                 return_json.update(formatted_message)
             else:
-                return_json["message"] = formatted_message
+                return_json['message'] = formatted_message
 
         return return_json
 

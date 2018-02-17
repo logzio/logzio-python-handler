@@ -19,33 +19,32 @@ MAX_BULK_SIZE_IN_BYTES = 1 * 1024 * 1024  # 1 MB
 
 
 def backup_logs(logs):
-    timestamp = datetime.now().strftime("%d%m%Y-%H%M%S")
-    print("Backing up your logs to logzio-failures-{}.txt".format(timestamp))
-    with open("logzio-failures-{}.txt".format(timestamp), "a") as f:
+    timestamp = datetime.now().strftime('%d%m%Y-%H%M%S')
+    print('Backing up your logs to logzio-failures-{}.txt'.format(timestamp))
+    with open('logzio-failures-{}.txt'.format(timestamp), 'a') as f:
         f.writelines('\n'.join(logs))
 
 
 class LogzioSender:
-
     def __init__(self,
-                 token, url="https://listener.logz.io:8071",
+                 token, url='https://listener.logz.io:8071',
                  logs_drain_timeout=5,
                  debug=False):
         self.token = token
-        self.url = "{}/?token={}".format(url, token)
+        self.url = '{}/?token={}'.format(url, token)
         self.logs_drain_timeout = logs_drain_timeout
         self.debug = debug
 
         # Function to see if the main thread is alive
         self.is_main_thread_active = lambda: any(
-            (i.name == "MainThread") and i.is_alive() for i in enumerate())
+            (i.name == 'MainThread') and i.is_alive() for i in enumerate())
 
         # Create a queue to hold logs
         self.queue = queue.Queue()
 
         self.sending_thread = Thread(target=self._drain_queue)
         self.sending_thread.daemon = False
-        self.sending_thread.name = "logzio-sending-thread"
+        self.sending_thread.name = 'logzio-sending-thread'
         self.sending_thread.start()
 
     def append(self, logs_message):
@@ -67,8 +66,8 @@ class LogzioSender:
             # all logs
             if not self.is_main_thread_active():
                 self._debug(
-                    "Identified quit of main thread, sending logs one "
-                    "last time")
+                    'Identified quit of main thread, sending logs one '
+                    'last time')
                 last_try = True
 
             try:
@@ -77,8 +76,8 @@ class LogzioSender:
             # TODO: Which exception?
             except Exception as e:
                 self._debug(
-                    "Unexpected exception while draining queue to Logz.io, "
-                    "swallowing. Exception: {}".format(e))
+                    'Unexpected exception while draining queue to Logz.io, '
+                    'swallowing. Exception: {}'.format(e))
 
             if not last_try:
                 sleep(self.logs_drain_timeout)
@@ -89,7 +88,7 @@ class LogzioSender:
         while not self.queue.empty():
             logs_list = self._get_messages_up_to_max_allowed_size()
             self._debug(
-                "Starting to drain {} logs to Logz.io".format(len(logs_list)))
+                'Starting to drain {} logs to Logz.io'.format(len(logs_list)))
 
             # Not configurable from the outside
             sleep_between_retries = 2
@@ -105,23 +104,23 @@ class LogzioSender:
                         self.url, headers=headers, data='\n'.join(logs_list))
                     if response.status_code != 200:
                         if response.status_code == 400:
-                            print("Got 400 code from Logz.io. This means that "
-                                  "some of your logs are too big, or badly "
-                                  "formatted. response: {}".format(
+                            print('Got 400 code from Logz.io. This means that '
+                                  'some of your logs are too big, or badly '
+                                  'formatted. response: {}'.format(
                                       response.text))
                             should_backup_to_disk = False
                             break
 
                         if response.status_code == 401:
                             print(
-                                "You are not authorized with Logz.io! Token "
-                                "OK? dropping logs...")
+                                'You are not authorized with Logz.io! Token '
+                                'OK? dropping logs...')
                             should_backup_to_disk = False
                             break
                         else:
                             print(
-                                "Got {} while sending logs to Logz.io, "
-                                "Try ({}/{}). Response: {}".format(
+                                'Got {} while sending logs to Logz.io, '
+                                'Try ({}/{}). Response: {}'.format(
                                     response.status_code,
                                     current_try + 1,
                                     number_of_retries,
@@ -129,15 +128,15 @@ class LogzioSender:
                             should_retry = True
                     else:
                         self._debug(
-                            "Successfully sent bulk of {} logs to "
-                            "Logz.io!".format(len(logs_list)))
+                            'Successfully sent bulk of {} logs to '
+                            'Logz.io!'.format(len(logs_list)))
                         should_backup_to_disk = False
                         break
 
                 # TODO: Which exception?
                 except Exception as e:
-                    print("Got exception while sending logs to Logz.io, "
-                          "Try ({}/{}). Message: {}".format(
+                    print('Got exception while sending logs to Logz.io, '
+                          'Try ({}/{}). Message: {}'.format(
                               current_try + 1, number_of_retries, e))
                     should_retry = True
 
@@ -147,8 +146,8 @@ class LogzioSender:
 
             if should_backup_to_disk:
                 # Write to file
-                print("Could not send logs to Logz.io after {} tries, "
-                      "backing up to local file system".format(
+                print('Could not send logs to Logz.io after {} tries, '
+                      'backing up to local file system'.format(
                           number_of_retries))
                 backup_logs(logs_list)
 
