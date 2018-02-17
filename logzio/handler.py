@@ -6,6 +6,7 @@ import traceback
 import logging.handlers
 
 from .sender import LogzioSender
+from .exceptions import LogzioException
 
 
 class LogzioHandler(logging.Handler):
