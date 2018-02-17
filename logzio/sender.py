@@ -1,7 +1,6 @@
 # This class is responsible for handling all asynchronous Logz.io's
 # communication
 import sys
-
 import json
 
 from time import sleep
@@ -21,8 +20,8 @@ MAX_BULK_SIZE_IN_BYTES = 1 * 1024 * 1024  # 1 MB
 
 def backup_logs(logs):
     timestamp = datetime.now().strftime("%d%m%Y-%H%M%S")
-    print("Backing up your logs to logzio-failures-{0}.txt".format(timestamp))
-    with open("logzio-failures-{0}.txt".format(timestamp), "a") as f:
+    print("Backing up your logs to logzio-failures-{}.txt".format(timestamp))
+    with open("logzio-failures-{}.txt".format(timestamp), "a") as f:
         f.writelines('\n'.join(logs))
 
 
@@ -33,7 +32,7 @@ class LogzioSender:
                  logs_drain_timeout=5,
                  debug=False):
         self.token = token
-        self.url = "{0}/?token={1}".format(url, token)
+        self.url = "{}/?token={}".format(url, token)
         self.logs_drain_timeout = logs_drain_timeout
         self.debug = debug
 
@@ -75,20 +74,22 @@ class LogzioSender:
             try:
                 self._flush_queue()
 
+            # TODO: Which exception?
             except Exception as e:
                 self._debug(
                     "Unexpected exception while draining queue to Logz.io, "
-                    "swallowing. Exception: " + str(e))
+                    "swallowing. Exception: {}".format(e))
 
             if not last_try:
                 sleep(self.logs_drain_timeout)
 
     def _flush_queue(self):
+        # TODO: Break this down. This function is crazy.
         # Sending logs until queue is empty
         while not self.queue.empty():
             logs_list = self._get_messages_up_to_max_allowed_size()
-            self._debug("Starting to drain " +
-                        str(len(logs_list)) + " logs to Logz.io")
+            self._debug(
+                "Starting to drain {} logs to Logz.io".format(len(logs_list)))
 
             # Not configurable from the outside
             sleep_between_retries = 2
@@ -106,7 +107,7 @@ class LogzioSender:
                         if response.status_code == 400:
                             print("Got 400 code from Logz.io. This means that "
                                   "some of your logs are too big, or badly "
-                                  "formatted. response: {0}".format(
+                                  "formatted. response: {}".format(
                                       response.text))
                             should_backup_to_disk = False
                             break
@@ -127,11 +128,13 @@ class LogzioSender:
                                     response.text))
                             should_retry = True
                     else:
-                        self._debug("Successfully sent bulk of " +
-                                    str(len(logs_list)) + " logs to Logz.io!")
+                        self._debug(
+                            "Successfully sent bulk of {} logs to "
+                            "Logz.io!".format(len(logs_list)))
                         should_backup_to_disk = False
                         break
 
+                # TODO: Which exception?
                 except Exception as e:
                     print("Got exception while sending logs to Logz.io, "
                           "Try ({}/{}). Message: {}".format(
@@ -144,9 +147,9 @@ class LogzioSender:
 
             if should_backup_to_disk:
                 # Write to file
-                print("Could not send logs to Logz.io after " +
-                      str(number_of_retries) +
-                      " tries, backing up to local file system.")
+                print("Could not send logs to Logz.io after {} tries, "
+                      "backing up to local file system".format(
+                          number_of_retries))
                 backup_logs(logs_list)
 
     def _get_messages_up_to_max_allowed_size(self):
