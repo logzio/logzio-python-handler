@@ -1,11 +1,11 @@
 [![PyPI version](https://badge.fury.io/py/logzio-python-handler.svg)](https://badge.fury.io/py/logzio-python-handler) [![Build Status](https://travis-ci.org/logzio/logzio-python-handler.svg?branch=master)](https://travis-ci.org/logzio/logzio-python-handler)
 
 # The Logz.io Python Handler
-This is a Python handler that sends logs in bulk over HTTPS to Logz.io.  
-The handler uses a subclass named LogzioSender (which can be used without this handler as well, to ship raw data).  
-The LogzioSender class opens a new Thread, that consumes from the logs queue. Each iteration (its frequency of which can be configured by the logs_drain_timeout parameter), will try to consume the queue in its entirety.  
-Logs will get divided into separate bulks, based on their size.  
-LogzioSender will check if the main thread is alive. In case the main thread quits, it will try to consume the queue one last time, and then exit. So your program can hang for a few seconds, until the logs are drained.  
+This is a Python handler that sends logs in bulk over HTTPS to Logz.io.
+The handler uses a subclass named LogzioSender (which can be used without this handler as well, to ship raw data).
+The LogzioSender class opens a new Thread, that consumes from the logs queue. Each iteration (its frequency of which can be configured by the logs_drain_timeout parameter), will try to consume the queue in its entirety.
+Logs will get divided into separate bulks, based on their size.
+LogzioSender will check if the main thread is alive. In case the main thread quits, it will try to consume the queue one last time, and then exit. So your program can hang for a few seconds, until the logs are drained.
 In case the logs failed to be sent to Logz.io after a couple of tries, they will be written to the local file system. You can later upload them to Logz.io using curl.
 
 ## Installation
@@ -20,8 +20,17 @@ Travis CI will build this handler and test against:
   - "3.4"
   - "3.5"
   - "3.6"
-  
+
 We can't ensure compatibility to any other version, as we can't test it automatically.
+
+To run tests:
+
+```bash
+$ pip install tox
+$ tox
+...
+
+```
 
 ## Python configuration
 #### Config File
@@ -53,8 +62,8 @@ format={"additional_field": "value"}
  - Time to sleep between draining attempts (defaults to "3")
  - Logz.io Listener address (defaults to "https://listener.logz.io:8071")
  - Debug flag. Set to True, will print debug messages to stdout. (defaults to "False")
- 
- Please note, that you have to configure those parameters by this exact order.  
+
+ Please note, that you have to configure those parameters by this exact order.
  i.e. you cannot set Debug to true, without configuring all of the previous parameters as well.
 
 #### Code Example
@@ -76,10 +85,10 @@ except:
 ```
 
 #### Extra Fields
-In case you need to dynamic metadata to your logger, other then the constant metadata from the formatter, you can use the "extra" parameter.  
-All key values in the dictionary passed in "extra" will be presented in Logz.io as new fields in the log you are sending.  
-Please note, that you cannot override default fields by the python logger (i.e. lineno, thread, etc..)  
-For example:  
+In case you need to dynamic metadata to your logger, other then the constant metadata from the formatter, you can use the "extra" parameter.
+All key values in the dictionary passed in "extra" will be presented in Logz.io as new fields in the log you are sending.
+Please note, that you cannot override default fields by the python logger (i.e. lineno, thread, etc..)
+For example:
 
 
 ```
@@ -144,7 +153,7 @@ LOGGING = {
 - 2.0.3 - Fix bug that consumed more logs while draining than Logz.io's bulk limit
 - 2.0.2 - Support for formatted messages (Thanks @johnraz!)
 - 2.0.1 - Added __all__ to __init__.py, so support * imports
-- 2.0.0 - Production, stable release. 
+- 2.0.0 - Production, stable release.
     - *BREAKING* - Configuration option logs_drain_count was removed, and the order of the parameters has changed for better simplicity. Please review the parameters section above.
     - Introducing the LogzioSender class, which is generic and can be used without the handler wrap to ship raw data to Logz.io. Just create a new instance of the class, and use the append() method.
     - Simplifications and Robustness
