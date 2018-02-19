@@ -21,6 +21,7 @@ def _find(pattern, path):
 class TestLogzioSender(TestCase):
     def setUp(self):
         self.logzio_listener = listener.MockLogzioListener()
+        self.logzio_listener.clear_logs_buffer()
         self.logzio_listener.clear_server_error()
         self.logs_drain_timeout = 1
 
