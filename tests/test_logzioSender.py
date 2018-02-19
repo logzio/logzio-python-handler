@@ -109,13 +109,21 @@ class TestLogzioSender(TestCase):
 
     def test_can_send_after_fork(self):
         childpid = os.fork()
-        log_message = 'logged from child process'
+        child_log_message = 'logged from child process'
+        parent_log_message = 'logged from parent process'
 
         if childpid == 0:
             # Log from the child process
-            self.logger.info(log_message)
+            self.logger.info(child_log_message)
             time.sleep(self.logs_drain_timeout * 2)
             os._exit(0)
         # Wait for the child process to finish
         os.waitpid(childpid, 0)
-        self.assertTrue(self.logzio_listener.find_log(log_message))
+
+        # log from the parent process
+        self.logger.info(parent_log_message)
+        time.sleep(self.logs_drain_timeout * 2)
+
+        # Ensure listener receive all log messages
+        self.assertTrue(self.logzio_listener.find_log(child_log_message))
+        self.assertTrue(self.logzio_listener.find_log(parent_log_message))
