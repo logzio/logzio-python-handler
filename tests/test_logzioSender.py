@@ -106,3 +106,16 @@ class TestLogzioSender(TestCase):
         with open(failure_files[0], "r") as f:
             line = f.readline()
             self.assertTrue(log_message in line)
+
+    def test_can_send_after_fork(self):
+        childpid = os.fork()
+        log_message = 'logged from child process'
+
+        if childpid == 0:
+            # Log from the child process
+            self.logger.info(log_message)
+            time.sleep(self.logs_drain_timeout * 2)
+            os._exit(0)
+        # Wait for the child process to finish
+        os.waitpid(childpid, 0)
+        self.assertTrue(self.logzio_listener.find_log(log_message))
