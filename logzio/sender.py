@@ -34,13 +34,18 @@ class LogzioSender:
 
         # Create a queue to hold logs
         self.queue = queue.Queue()
+        self._initialize_sending_thread()
 
+    def _initialize_sending_thread(self):
         self.sending_thread = Thread(target=self._drain_queue)
         self.sending_thread.daemon = False
         self.sending_thread.name = "logzio-sending-thread"
         self.sending_thread.start()
 
     def append(self, logs_message):
+        if not self.sending_thread.is_alive():
+            self._initialize_sending_thread()
+
         # Queue lib is thread safe, no issue here
         self.queue.put(json.dumps(logs_message))
 

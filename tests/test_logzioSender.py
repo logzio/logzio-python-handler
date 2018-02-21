@@ -21,6 +21,7 @@ def _find(pattern, path):
 class TestLogzioSender(TestCase):
     def setUp(self):
         self.logzio_listener = listener.MockLogzioListener()
+        self.logzio_listener.clear_logs_buffer()
         self.logzio_listener.clear_server_error()
         self.logs_drain_timeout = 1
 
@@ -106,3 +107,24 @@ class TestLogzioSender(TestCase):
         with open(failure_files[0], "r") as f:
             line = f.readline()
             self.assertTrue(log_message in line)
+
+    def test_can_send_after_fork(self):
+        childpid = os.fork()
+        child_log_message = 'logged from child process'
+        parent_log_message = 'logged from parent process'
+
+        if childpid == 0:
+            # Log from the child process
+            self.logger.info(child_log_message)
+            time.sleep(self.logs_drain_timeout * 2)
+            os._exit(0)
+        # Wait for the child process to finish
+        os.waitpid(childpid, 0)
+
+        # log from the parent process
+        self.logger.info(parent_log_message)
+        time.sleep(self.logs_drain_timeout * 2)
+
+        # Ensure listener receive all log messages
+        self.assertTrue(self.logzio_listener.find_log(child_log_message))
+        self.assertTrue(self.logzio_listener.find_log(parent_log_message))
