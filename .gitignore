@@ -57,6 +57,3 @@ coverage.xml
 *.iml
 
 *COMMIT_MSG
-
-# QuickBuild
-.qbcache/
