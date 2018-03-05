@@ -71,8 +71,6 @@ class LogzioSender:
 
             try:
                 self._flush_queue()
-
-            # TODO: Which exception?
             except Exception as e:
                 self.logger.debug(
                     'Unexpected exception while draining queue to Logz.io, '
@@ -82,7 +80,6 @@ class LogzioSender:
                 sleep(self.logs_drain_timeout)
 
     def _flush_queue(self):
-        # TODO: Break this down. This function is crazy.
         # Sending logs until queue is empty
         while not self.queue.empty():
             logs_list = self._get_messages_up_to_max_allowed_size()
@@ -131,8 +128,6 @@ class LogzioSender:
                             'Logz.io!', len(logs_list))
                         should_backup_to_disk = False
                         break
-
-                # TODO: Which exception?
                 except Exception as e:
                     self.logger.error(
                         'Got exception while sending logs to Logz.io, '
