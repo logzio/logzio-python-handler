@@ -1,0 +1,2 @@
+class LogzioException(Exception):
+    pass
