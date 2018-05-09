@@ -72,7 +72,7 @@ class LogzioHandler(logging.Handler):
     def format_message(self, message):
         now = datetime.datetime.utcnow()
         timestamp = now.strftime('%Y-%m-%dT%H:%M:%S') + \
-            '.%03d' % (now.microsecond / 1000) + 'Z'
+                    '.%03d' % (now.microsecond / 1000) + 'Z'
 
         return_json = {
             'logger': message.name,
@@ -86,7 +86,9 @@ class LogzioHandler(logging.Handler):
 
         if message.exc_info:
             return_json['exception'] = self.format_exception(message.exc_info)
-            message.exc_info = None  # We want to ignore logging format on exceptions, as we handle those differently
+
+            # We want to ignore logging format on exceptions,  as we handle those differently
+            message.exc_info = None
 
         formatted_message = self.format(message)
         if isinstance(formatted_message, dict):
