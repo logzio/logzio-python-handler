@@ -86,12 +86,12 @@ class LogzioHandler(logging.Handler):
 
         if message.exc_info:
             return_json['exception'] = self.format_exception(message.exc_info)
+        
+        formatted_message = self.format(message)
+        if isinstance(formatted_message, dict):
+            return_json.update(formatted_message)
         else:
-            formatted_message = self.format(message)
-            if isinstance(formatted_message, dict):
-                return_json.update(formatted_message)
-            else:
-                return_json['message'] = formatted_message
+            return_json['message'] = formatted_message
 
         return_json.update(self.extra_fields(message))
         return return_json
