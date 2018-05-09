@@ -72,7 +72,7 @@ class LogzioHandler(logging.Handler):
     def format_message(self, message):
         now = datetime.datetime.utcnow()
         timestamp = now.strftime('%Y-%m-%dT%H:%M:%S') + \
-                    '.%03d' % (now.microsecond / 1000) + 'Z'
+            '.%03d' % (now.microsecond / 1000) + 'Z'
 
         return_json = {
             'logger': message.name,
