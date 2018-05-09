@@ -147,6 +147,7 @@ LOGGING = {
 - appname - Your django app
 
 ## Release Notes
+- 2.0.9 - Support extra fields on exceptions too (Thanks @asafc64!)
 - 2.0.8 - Various PEP8, testings and logging changes (Thanks @nir0s!)
 - 2.0.7 - Make sure sending thread is alive after fork (Thanks @jo-tham!)
 - 2.0.6 - Add "flush()" method to manually drain the queue (Thanks @orenmazor!)
