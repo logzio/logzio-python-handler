@@ -38,23 +38,31 @@ class LogzioHandler(logging.Handler):
             'msecs', 'msecs', 'message', 'msg', 'name', 'pathname', 'process',
             'processName', 'relativeCreated', 'thread', 'threadName')
 
+        return self._extra_fields_handle_dictionary(message, not_allowed_keys)
+
+    @classmethod
+    def _extra_fields_recursive(cls, obj, not_allowed_keys=()):
         if sys.version_info < (3, 0):
             # long and basestring don't exist in py3 so, NOQA
-            var_type = (basestring, bool, dict, float,  # NOQA
-                        int, long, list, type(None))  # NOQA
+            var_type = (basestring, bool, float,  # NOQA
+                        int, long, type(None))  # NOQA
         else:
             var_type = (str, bool, dict, float, int, list, type(None))
 
-        extra_fields = {}
+        if isinstance(obj, (list, tuple)):
+            return tuple(cls._extra_fields_recursive(item) for item in obj)
+        elif isinstance(obj, dict):
+            return cls._extra_fields_handle_dictionary(obj, not_allowed_keys)
+        elif isinstance(obj, var_type):
+            return obj
+        else:
+            return repr(obj)
 
-        for key, value in message.__dict__.items():
-            if key not in not_allowed_keys:
-                if isinstance(value, var_type):
-                    extra_fields[key] = value
-                else:
-                    extra_fields[key] = repr(value)
-
-        return extra_fields
+    @classmethod
+    def _extra_fields_handle_dictionary(cls, obj, not_allowed_keys=()):
+        return {cls._extra_fields_recursive(key): cls._extra_fields_recursive(value)
+                for key, value in obj.__dict__.items()
+                if key not in not_allowed_keys}
 
     def flush(self):
         self.logzio_sender.flush()
