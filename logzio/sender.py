@@ -156,7 +156,12 @@ class LogzioSender:
         current_size = 0
         while not self.queue.empty():
             current_log = self.queue.get()
-            current_size += sys.getsizeof(current_log)
+            try:
+                current_size += sys.getsizeof(current_log)
+            except TypeError:
+                # pypy do not support sys.getsizeof
+                current_size += len(current_log) * 4
+
             logs_list.append(current_log)
             if current_size >= MAX_BULK_SIZE_IN_BYTES:
                 break
