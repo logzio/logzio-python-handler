@@ -62,6 +62,7 @@ format={"additional_field": "value"}
  - Time to sleep between draining attempts (defaults to "3")
  - Logz.io Listener address (defaults to "https://listener.logz.io:8071")
  - Debug flag. Set to True, will print debug messages to stdout. (defaults to "False")
+ - Backup logs flag. Set to False, will disable the local backup of logs in case of failure. (defaults to "True")
 
  Please note, that you have to configure those parameters by this exact order.
  i.e. you cannot set Debug to true, without configuring all of the previous parameters as well.
