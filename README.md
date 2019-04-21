@@ -15,13 +15,14 @@ pip install logzio-python-handler
 
 ## Tested Python Versions
 Travis CI will build this handler and test against:
-  - "2.7"
-  - "3.3"
+  - "2.7" 
   - "3.4"
   - "3.5"
   - "3.6"
 
 We can't ensure compatibility to any other version, as we can't test it automatically.
+
+**Note**: The Logz.io Python Handler no longer tests Python 3.3 (which was [end-of-lifed](https://www.python.org/dev/peps/pep-0398/#id11) in 2017).
 
 To run tests:
 
