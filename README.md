@@ -149,6 +149,7 @@ LOGGING = {
 - appname - Your django app
 
 ## Release Notes
+- 2.0.12 - Support disable logs local backup
 - 2.0.11 - Completely isolate exception from the message
 - 2.0.10 - Not ignoring formatting on exceptions
 - 2.0.9 - Support extra fields on exceptions too (Thanks @asafc64!)
