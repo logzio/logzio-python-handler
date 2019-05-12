@@ -32,11 +32,13 @@ class LogzioSender:
     def __init__(self,
                  token, url='https://listener.logz.io:8071',
                  logs_drain_timeout=5,
-                 debug=False):
+                 debug=False,
+                 backup_logs=True):
         self.token = token
         self.url = '{}/?token={}'.format(url, token)
         self.logs_drain_timeout = logs_drain_timeout
         self.logger = get_logger(debug)
+        self.backup_logs = backup_logs
 
         # Function to see if the main thread is alive
         self.is_main_thread_active = lambda: any(
@@ -144,7 +146,7 @@ class LogzioSender:
                     sleep(sleep_between_retries)
                     sleep_between_retries *= 2
 
-            if should_backup_to_disk:
+            if should_backup_to_disk and self.backup_logs:
                 # Write to file
                 self.logger.info(
                     'Could not send logs to Logz.io after %s tries, '

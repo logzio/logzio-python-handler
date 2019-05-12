@@ -108,6 +108,20 @@ class TestLogzioSender(TestCase):
             line = f.readline()
             self.assertTrue(log_message in line)
 
+    def test_local_file_backup_disabled(self):
+        log_message = "Backup to local filesystem"
+        self.logzio_listener.set_server_error()
+        self.logger.handlers[0].logzio_sender.backup_logs = False
+        self.logger.info(log_message)
+
+        # Make sure no file is present
+        self.assertEqual(len(_find("logzio-failures-*.txt", ".")), 0)
+
+        time.sleep(2 * 2 * 2 * 2 * 2)  # All of the retries
+
+        # Make sure no file was created
+        self.assertEqual(len(_find("logzio-failures-*.txt", ".")), 0)
+
     def test_can_send_after_fork(self):
         childpid = os.fork()
         child_log_message = 'logged from child process'

@@ -16,7 +16,8 @@ class LogzioHandler(logging.Handler):
                  logzio_type="python",
                  logs_drain_timeout=3,
                  url="https://listener.logz.io:8071",
-                 debug=False):
+                 debug=False,
+                 backup_logs=True):
 
         if not token:
             raise LogzioException('Logz.io Token must be provided')
@@ -27,7 +28,8 @@ class LogzioHandler(logging.Handler):
             token=token,
             url=url,
             logs_drain_timeout=logs_drain_timeout,
-            debug=debug)
+            debug=debug,
+            backup_logs=backup_logs)
         logging.Handler.__init__(self)
 
     def extra_fields(self, message):
