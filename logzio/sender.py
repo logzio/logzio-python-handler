@@ -48,6 +48,11 @@ class LogzioSender:
         self.queue = queue.Queue()
         self._initialize_sending_thread()
 
+    def __del__(self):
+        del self.logger
+        del self.backup_logs
+        del self.queue
+
     def _initialize_sending_thread(self):
         self.sending_thread = Thread(target=self._drain_queue)
         self.sending_thread.daemon = False
@@ -152,6 +157,8 @@ class LogzioSender:
                     'Could not send logs to Logz.io after %s tries, '
                     'backing up to local file system', number_of_retries)
                 backup_logs(logs_list, self.logger)
+
+            del logs_list
 
     def _get_messages_up_to_max_allowed_size(self):
         logs_list = []

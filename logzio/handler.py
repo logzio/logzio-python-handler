@@ -32,6 +32,9 @@ class LogzioHandler(logging.Handler):
             backup_logs=backup_logs)
         logging.Handler.__init__(self)
 
+    def __del__(self):
+        del self.logzio_sender
+
     def extra_fields(self, message):
 
         not_allowed_keys = (
