@@ -33,12 +33,14 @@ class LogzioSender:
                  token, url='https://listener.logz.io:8071',
                  logs_drain_timeout=5,
                  debug=False,
-                 backup_logs=True):
+                 backup_logs=True,
+                 network_timeout=10.0):
         self.token = token
         self.url = '{}/?token={}'.format(url, token)
         self.logs_drain_timeout = logs_drain_timeout
         self.logger = get_logger(debug)
         self.backup_logs = backup_logs
+        self.network_timeout = network_timeout
 
         # Function to see if the main thread is alive
         self.is_main_thread_active = lambda: any(
@@ -104,7 +106,8 @@ class LogzioSender:
                 should_retry = False
                 try:
                     response = requests.post(
-                        self.url, headers=headers, data='\n'.join(logs_list))
+                        self.url, headers=headers, data='\n'.join(logs_list),
+                        timeout=self.network_timeout)
                     if response.status_code != 200:
                         if response.status_code == 400:
                             self.logger.info(
