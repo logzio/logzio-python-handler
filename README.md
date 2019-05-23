@@ -64,6 +64,7 @@ format={"additional_field": "value"}
  - Logz.io Listener address (defaults to "https://listener.logz.io:8071")
  - Debug flag. Set to True, will print debug messages to stdout. (defaults to "False")
  - Backup logs flag. Set to False, will disable the local backup of logs in case of failure. (defaults to "True")
+ - Network timeout, in seconds, int or float, for sending the logs to logz.io. (defaults to 10)
 
  Please note, that you have to configure those parameters by this exact order.
  i.e. you cannot set Debug to true, without configuring all of the previous parameters as well.
@@ -124,7 +125,8 @@ LOGGING = {
             'logzio_type': "django",
             'logs_drain_timeout': 5,
             'url': 'https://listener.logz.io:8071',
-            'debug': True
+            'debug': True,
+            'network_timeout': 10,
         },
     },
     'loggers': {
