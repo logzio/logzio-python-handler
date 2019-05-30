@@ -151,6 +151,9 @@ LOGGING = {
 - appname - Your django app
 
 ## Release Notes
+- 2.0.13 
+    - Add support for `pypy` and `pypy3`(@rudaporto-olx)
+    - Add timeout for requests.post() (@oseemann) 
 - 2.0.12 - Support disable logs local backup
 - 2.0.11 - Completely isolate exception from the message
 - 2.0.10 - Not ignoring formatting on exceptions
