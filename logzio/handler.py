@@ -17,7 +17,8 @@ class LogzioHandler(logging.Handler):
                  logs_drain_timeout=3,
                  url="https://listener.logz.io:8071",
                  debug=False,
-                 backup_logs=True):
+                 backup_logs=True,
+                 network_timeout=10.0):
 
         if not token:
             raise LogzioException('Logz.io Token must be provided')
@@ -29,7 +30,8 @@ class LogzioHandler(logging.Handler):
             url=url,
             logs_drain_timeout=logs_drain_timeout,
             debug=debug,
-            backup_logs=backup_logs)
+            backup_logs=backup_logs,
+            network_timeout=network_timeout)
         logging.Handler.__init__(self)
 
     def __del__(self):
