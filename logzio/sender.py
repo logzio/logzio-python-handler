@@ -48,6 +48,11 @@ class LogzioSender:
         self.queue = queue.Queue()
         self._initialize_sending_thread()
 
+    def __del__(self):
+        del self.logger
+        del self.backup_logs
+        del self.queue
+
     def _initialize_sending_thread(self):
         self.sending_thread = Thread(target=self._drain_queue)
         self.sending_thread.daemon = False
@@ -153,12 +158,19 @@ class LogzioSender:
                     'backing up to local file system', number_of_retries)
                 backup_logs(logs_list, self.logger)
 
+            del logs_list
+
     def _get_messages_up_to_max_allowed_size(self):
         logs_list = []
         current_size = 0
         while not self.queue.empty():
             current_log = self.queue.get()
-            current_size += sys.getsizeof(current_log)
+            try:
+                current_size += sys.getsizeof(current_log)
+            except TypeError:
+                # pypy do not support sys.getsizeof
+                current_size += len(current_log) * 4
+
             logs_list.append(current_log)
             if current_size >= MAX_BULK_SIZE_IN_BYTES:
                 break

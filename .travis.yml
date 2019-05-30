@@ -15,6 +15,10 @@ matrix:
       env: TOXENV=py35
     - python: 3.6
       env: TOXENV=py36
+    - python: pypy
+      env: TOXENV=pypy
+    - python: pypy3.5
+      env: TOXENV=pypy3
 
 install:
   - pip install tox
