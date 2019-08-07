@@ -1,48 +1,39 @@
+# Logz.io Python Handler
+
 [![PyPI version](https://badge.fury.io/py/logzio-python-handler.svg)](https://badge.fury.io/py/logzio-python-handler) [![Build Status](https://travis-ci.org/logzio/logzio-python-handler.svg?branch=master)](https://travis-ci.org/logzio/logzio-python-handler)
 
-# The Logz.io Python Handler
-This is a Python handler that sends logs in bulk over HTTPS to Logz.io.
-The handler uses a subclass named LogzioSender (which can be used without this handler as well, to ship raw data).
-The LogzioSender class opens a new Thread, that consumes from the logs queue. Each iteration (its frequency of which can be configured by the logs_drain_timeout parameter), will try to consume the queue in its entirety.
-Logs will get divided into separate bulks, based on their size.
-LogzioSender will check if the main thread is alive. In case the main thread quits, it will try to consume the queue one last time, and then exit. So your program can hang for a few seconds, until the logs are drained.
-In case the logs failed to be sent to Logz.io after a couple of tries, they will be written to the local file system. You can later upload them to Logz.io using curl.
+## Logz.io Python Handler setup
 
-## Installation
-```bash
+Logz.io Python Handler sends logs in bulk over HTTPS to Logz.io.
+Logs are grouped into bulks based on their size.
+
+If the main thread quits, the handler tries to consume the remaining logs and then exits.
+If the handler can't send the remaining logs, they are written to the local file system for later retrieval.
+
+### Add the dependency to your project
+
+Navigate to your project's folder in the command line, and run this command to install the dependency.
+
+```shell
 pip install logzio-python-handler
 ```
 
-## Tested Python Versions
-Travis CI will build this handler and test against:
-  - "2.7" 
-  - "3.4"
-  - "3.5"
-  - "3.6"
+### Configure Logz.io Python Handler for a standard Python project
 
-We can't ensure compatibility to any other version, as we can't test it automatically.
+Use the samples in the code block below as a starting point, and replace the sample with a configuration that matches your needs.
 
-**Note**: The Logz.io Python Handler no longer tests Python 3.3 (which was [end-of-lifed](https://www.python.org/dev/peps/pep-0398/#id11) in 2017).
+For a complete list of options, see the configuration parameters below the code block.👇
 
-To run tests:
-
-```bash
-$ pip install tox
-$ tox
-...
-
-```
-
-## Python configuration
-#### Config File
-```
+```python
 [handlers]
 keys=LogzioHandler
 
 [handler_LogzioHandler]
 class=logzio.handler.LogzioHandler
 formatter=logzioFormat
-args=('token', 'my_type')
+
+# Parameters must be set in order. Replace these parameters with your configuration.
+args=('<<SHIPPING-TOKEN>>', '<<LOG-TYPE>>', <<TIMEOUT>>, '<<LISTENER-HOST>>:8071', <<DEBUG-FLAG>>)
 
 [formatters]
 keys=logzioFormat
@@ -57,25 +48,34 @@ level=INFO
 [formatter_logzioFormat]
 format={"additional_field": "value"}
 ```
-*args=() arguments, by order*
- - Your logz.io token
- - Log type, for searching in logz.io (defaults to "python")
- - Time to sleep between draining attempts (defaults to "3")
- - Logz.io Listener address (defaults to "https://listener.logz.io:8071")
- - Debug flag. Set to True, will print debug messages to stdout. (defaults to "False")
- - Backup logs flag. Set to False, will disable the local backup of logs in case of failure. (defaults to "True")
- - Network timeout, in seconds, int or float, for sending the logs to logz.io. (defaults to 10)
 
- Please note, that you have to configure those parameters by this exact order.
- i.e. you cannot set Debug to true, without configuring all of the previous parameters as well.
+**Parameters**
 
-#### Code Example
+---
+
+**Important**:
+Arguments must be configured in the order shown.
+For example, to set debug-flag to `True`, you need to set every argument that comes before it.
+
+---
+
+| Parameter | Description |
+|---|---|
+| account-token | **Required**. Your Logz.io [account token](https://app.logz.io/#/dashboard/settings/general). <br>  Replace `<<SHIPPING-TOKEN>>` with the [token](https://app.logz.io/#/dashboard/settings/general) of the account you want to ship to. |
+| log-type | **Default**: `python` <br>  The [log type](https://docs.logz.io/user-guide/log-shipping/built-in-log-types.html), shipped as `type` field.  Used by Logz.io for consistent parsing.  Can't contain spaces. |
+| timeout | **Default**: `3` <br>  Time to wait between log draining attempts, in seconds. |
+| listener-url | **Default**: `https://listener.logz.io:8071` <br>  Listener URL and port. <br>  Replace `<<LISTENER-HOST>>` with your region's listener host (for example, `listener.logz.io`). For more information on finding your account's region, see [Account region](https://docs.logz.io/user-guide/accounts/account-region.html). |
+| debug-flag | **Default**: `False` <br>  Debug flag. To print debug messages to stdout, `True`. Otherwise, `False`. |
+
+**Code sample**
+
 ```python
 import logging
 import logging.config
 
-# Say i have saved my configuration under ./myconf.conf
+# If configuration is stored at ./myconf.conf:
 logging.config.fileConfig('myconf.conf')
+
 logger = logging.getLogger('superAwesomeLogzioLogger')
 
 logger.info('Test log')
@@ -87,71 +87,16 @@ except:
     logger.exception("Supporting exceptions too!")
 ```
 
-#### Extra Fields
-In case you need to dynamic metadata to your logger, other then the constant metadata from the formatter, you can use the "extra" parameter.
-All key values in the dictionary passed in "extra" will be presented in Logz.io as new fields in the log you are sending.
-Please note, that you cannot override default fields by the python logger (i.e. lineno, thread, etc..)
-For example:
+To add dynamic metadata to your logger other than the constant metadata from the formatter, you can use the `extra` parameter.
+Key-value pairs passed in `extra` are shown as new fields in Logz.io.
+Please note that you can't override default fields from the python logger, such as `lineno` or `thread`.
 
-
-```
+```python
 logger.info('Warning', extra={'extra_key':'extra_value'})
 ```
 
-## Django configuration
-```
-LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': False,
-    'formatters': {
-        'verbose': {
-            'format': '%(levelname)s %(asctime)s %(module)s %(process)d %(thread)d %(message)s'
-        },
-        'logzioFormat': {
-            'format': '{"additional_field": "value"}'
-        }
-    },
-    'handlers': {
-        'console': {
-            'class': 'logging.StreamHandler',
-            'level': 'DEBUG',
-            'formatter': 'verbose'
-        },
-        'logzio': {
-            'class': 'logzio.handler.LogzioHandler',
-            'level': 'INFO',
-            'formatter': 'logzioFormat',
-            'token': 'token',
-            'logzio_type': "django",
-            'logs_drain_timeout': 5,
-            'url': 'https://listener.logz.io:8071',
-            'debug': True,
-            'network_timeout': 10,
-        },
-    },
-    'loggers': {
-        'django': {
-            'handlers': ['console', ],
-            'level': os.getenv('DJANGO_LOG_LEVEL', 'INFO')
-        },
-        'appname': {
-            'handlers': ['console', 'logzio'],
-            'level': 'INFO'
-        }
-    }
-}
-
-```
-*Change*
-- token - Your logzio token
-- url - Logz.io Listener address
-- logs_drain_count - Number of logs to keep in buffer before draining
-- logs_drain_timeout - Time to wait before draining, regardless of the previouse setting
-- logzio_type - Log type, for searching in logz.io (defaults to "python"), it cannot contain a space.
-- appname - Your django app
-
 ## Release Notes
-- 2.0.13 
+- 2.0.13
     - Add support for `pypy` and `pypy3`(@rudaporto-olx)
     - Add timeout for requests.post() (@oseemann) 
 - 2.0.12 - Support disable logs local backup
