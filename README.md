@@ -51,13 +51,9 @@ format={"additional_field": "value"}
 
 **Parameters**
 
----
-
 **Important**:
 Arguments must be configured in the order shown.
 For example, to set debug-flag to `True`, you need to set every argument that comes before it.
-
----
 
 | Parameter | Description |
 |---|---|
