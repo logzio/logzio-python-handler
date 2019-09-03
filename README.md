@@ -91,14 +91,30 @@ Please note that you can't override default fields from the python logger, such 
 logger.info('Warning', extra={'extra_key':'extra_value'})
 ```
 
-## Tested Python Versions
+## Testing
+
+To test 
+
+```bash
+$ pip install tox
+$ tox
+...
+```
+
+### Tested Python Versions
 
 Travis CI will build this handler and test against:
+
+**Note**:
+The Logz.io Python Handler no longer tests Python 3.3.
+This version was [end-of-lifed](https://www.python.org/dev/peps/pep-0398/#id11) in 2017.
 
 - "2.7"
 - "3.4"
 - "3.5"
 - "3.6"
+
+We can't ensure compatibility to any other version, as we can't test it automatically.
 
 ## Release Notes
 
