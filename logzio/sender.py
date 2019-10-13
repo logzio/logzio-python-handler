@@ -18,6 +18,7 @@ else:
 
 
 MAX_BULK_SIZE_IN_BYTES = 1 * 1024 * 1024  # 1 MB
+requests_session = requests.Session()
 
 
 def backup_logs(logs, logger):
@@ -110,7 +111,7 @@ class LogzioSender:
             for current_try in range(number_of_retries):
                 should_retry = False
                 try:
-                    response = requests.post(
+                    response = requests_session.post(
                         self.url, headers=headers, data='\n'.join(logs_list),
                         timeout=self.network_timeout)
                     if response.status_code != 200:
