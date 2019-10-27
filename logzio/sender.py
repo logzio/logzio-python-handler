@@ -18,7 +18,6 @@ else:
 
 
 MAX_BULK_SIZE_IN_BYTES = 1 * 1024 * 1024  # 1 MB
-requests_session = requests.Session()
 
 
 def backup_logs(logs, logger):
@@ -42,6 +41,7 @@ class LogzioSender:
         self.logger = get_logger(debug)
         self.backup_logs = backup_logs
         self.network_timeout = network_timeout
+        self.requests_session = requests.Session()
 
         # Function to see if the main thread is alive
         self.is_main_thread_active = lambda: any(
@@ -111,7 +111,7 @@ class LogzioSender:
             for current_try in range(number_of_retries):
                 should_retry = False
                 try:
-                    response = requests_session.post(
+                    response = self.requests_session.post(
                         self.url, headers=headers, data='\n'.join(logs_list),
                         timeout=self.network_timeout)
                     if response.status_code != 200:
