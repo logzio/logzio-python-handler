@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 
 from setuptools import setup, find_packages
-
 setup(
     name="logzio-python-handler",
     version='2.0.14',
