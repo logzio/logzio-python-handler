@@ -1,10 +1,9 @@
 #!/usr/bin/env python
 
 from setuptools import setup, find_packages
-
 setup(
     name="logzio-python-handler",
-    version='2.0.13',
+    version='2.0.14',
     description="Logging handler to send logs to your Logz.io account with bulk SSL",
     keywords="logging handler logz.io bulk https",
     author="roiravhon",
