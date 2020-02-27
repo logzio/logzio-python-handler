@@ -69,22 +69,28 @@ format={"additional_field": "value"}
  Please note, that you have to configure those parameters by this exact order.
  i.e. you cannot set Debug to true, without configuring all of the previous parameters as well.
 
+#### Serverless platforms
+In case you are using a serverless platform, you'll need to import and add the LogzioFlusher annotation before your sender function. To use it in the code example below, uncomment the import statement and the `import` statement and the `@LogzioFlusher(logger)` line.
+
 #### Code Example
 ```python
 import logging
 import logging.config
+# from logzio.flusher import LogzioFlusher
 
 # Say i have saved my configuration under ./myconf.conf
 logging.config.fileConfig('myconf.conf')
 logger = logging.getLogger('superAwesomeLogzioLogger')
 
-logger.info('Test log')
-logger.warn('Warning')
+# @LogzioFlusher(logger)
+def my_func():
+    logger.info('Test log')
+    logger.warn('Warning')
 
-try:
-    1/0
-except:
-    logger.exception("Supporting exceptions too!")
+    try:
+        1/0
+    except:
+        logger.exception("Supporting exceptions too!")
 ```
 
 #### Extra Fields
@@ -97,6 +103,7 @@ For example:
 ```
 logger.info('Warning', extra={'extra_key':'extra_value'})
 ```
+
 
 ## Django configuration
 ```
@@ -142,6 +149,7 @@ LOGGING = {
 }
 
 ```
+
 *Change*
 - token - Your logzio token
 - url - Logz.io Listener address
@@ -151,6 +159,8 @@ LOGGING = {
 - appname - Your django app
 
 ## Release Notes
+- 2.0.14
+    - Added flusher decorator for serverless platforms(@mcmasty)
 - 2.0.13 
     - Add support for `pypy` and `pypy3`(@rudaporto-olx)
     - Add timeout for requests.post() (@oseemann) 
