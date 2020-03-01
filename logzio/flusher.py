@@ -18,4 +18,3 @@ class LogzioFlusher(logging.Logger):
             finally:
                 [h.flush() for h in self.logger.root.handlers]
         return wrapper
-
