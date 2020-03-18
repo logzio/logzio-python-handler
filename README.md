@@ -70,7 +70,8 @@ format={"additional_field": "value"}
  i.e. you cannot set Debug to true, without configuring all of the previous parameters as well.
 
 #### Serverless platforms
-In case you are using a serverless platform, you'll need to import and add the LogzioFlusher annotation before your sender function. To use it in the code example below, uncomment the import statement and the `import` statement and the `@LogzioFlusher(logger)` line.
+
+If you're using a serverless function, you'll need to import and add the LogzioFlusher annotation before your sender function. To do this, in the code sample below, uncomment the `import` statement and the `@LogzioFlusher(logger)` annotation line.
 
 #### Code Example
 ```python
