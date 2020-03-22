@@ -19,6 +19,8 @@ Travis CI will build this handler and test against:
   - "3.4"
   - "3.5"
   - "3.6"
+  - "3.7"
+  - "3.8"
 
 We can't ensure compatibility to any other version, as we can't test it automatically.
 
@@ -164,6 +166,7 @@ LOGGING = {
 ## Release Notes
 - 2.0.14
     - Added flusher decorator for serverless platforms(@mcmasty)
+    - Add support for `python3.7` and `python3.8` 
 - 2.0.13 
     - Add support for `pypy` and `pypy3`(@rudaporto-olx)
     - Add timeout for requests.post() (@oseemann) 

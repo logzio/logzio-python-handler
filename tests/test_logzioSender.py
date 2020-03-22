@@ -29,7 +29,8 @@ class TestLogzioSender(TestCase):
             "version": 1,
             "formatters": {
                 "logzio": {
-                    "format": '{"key": "value"}'
+                    "format": '{"key": "value"}',
+                    "validate": False
                 }
             },
             "handlers": {
