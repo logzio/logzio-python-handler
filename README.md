@@ -84,6 +84,7 @@ import logging.config
 logging.config.fileConfig('myconf.conf')
 logger = logging.getLogger('superAwesomeLogzioLogger')
 
+# If you're using a serverless function, uncomment.
 # @LogzioFlusher(logger)
 def my_func():
     logger.info('Test log')
