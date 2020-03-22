@@ -77,6 +77,7 @@ If you're using a serverless function, you'll need to import and add the LogzioF
 ```python
 import logging
 import logging.config
+# If you're using a serverless function, uncomment.
 # from logzio.flusher import LogzioFlusher
 
 # Say i have saved my configuration under ./myconf.conf
