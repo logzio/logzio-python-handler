@@ -164,7 +164,7 @@ LOGGING = {
 - appname - Your django app
 
 ## Release Notes
-- 2.0.14
+- 2.0.15
     - Added flusher decorator for serverless platforms(@mcmasty)
     - Add support for `python3.7` and `python3.8` 
 - 2.0.13 
