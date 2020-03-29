@@ -12,7 +12,7 @@ setup(
     license="Apache License 2",
     packages=find_packages(),
     install_requires=[
-        "requests"
+        "requests>=2.23.0"
     ],
     test_requires=[
         "future"
