@@ -14,9 +14,15 @@ pip install logzio-python-handler
 ```
 
 ## Tested Python Versions
+<table><tr><th>
+
+### Deprecation announcement
+As of version 2.1.0, this project will no long support Python 2.7 & 3.4. We recommend migrating your projects to Python 3.5+ as soon as possible. We'll be happy to answer any questions you have in [a GitHub issue](https://github.com/logzio/logzio-python-handler/issues). <br><br>
+Thanks! <br>
+The Logz.io Integrations team
+</th></tr></table>
+
 Travis CI will build this handler and test against:
-  - "2.7" 
-  - "3.4"
   - "3.5"
   - "3.6"
   - "3.7"
@@ -164,6 +170,8 @@ LOGGING = {
 - appname - Your django app
 
 ## Release Notes
+- 2.1.0
+    - Deprecated `python2.7` & `python3.4`
 - 2.0.15
     - Added flusher decorator for serverless platforms(@mcmasty)
     - Add support for `python3.7` and `python3.8` 
