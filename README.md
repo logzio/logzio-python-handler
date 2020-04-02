@@ -1,6 +1,15 @@
 [![PyPI version](https://badge.fury.io/py/logzio-python-handler.svg)](https://badge.fury.io/py/logzio-python-handler) [![Build Status](https://travis-ci.org/logzio/logzio-python-handler.svg?branch=master)](https://travis-ci.org/logzio/logzio-python-handler)
 
 # The Logz.io Python Handler
+
+<table><tr><th>
+
+### Deprecation announcement
+Version 2.1.0 of this project ends support for Python 2.7 & 3.4. We recommend migrating your projects to Python 3.5 or newer as soon as possible. We'll be happy to answer any questions you have in [a GitHub issue](https://github.com/logzio/logzio-python-handler/issues).
+Thanks! <br>
+The Logz.io Integrations team
+</th></tr></table>
+
 This is a Python handler that sends logs in bulk over HTTPS to Logz.io.
 The handler uses a subclass named LogzioSender (which can be used without this handler as well, to ship raw data).
 The LogzioSender class opens a new Thread, that consumes from the logs queue. Each iteration (its frequency of which can be configured by the logs_drain_timeout parameter), will try to consume the queue in its entirety.
@@ -8,20 +17,13 @@ Logs will get divided into separate bulks, based on their size.
 LogzioSender will check if the main thread is alive. In case the main thread quits, it will try to consume the queue one last time, and then exit. So your program can hang for a few seconds, until the logs are drained.
 In case the logs failed to be sent to Logz.io after a couple of tries, they will be written to the local file system. You can later upload them to Logz.io using curl.
 
+
 ## Installation
 ```bash
 pip install logzio-python-handler
 ```
 
 ## Tested Python Versions
-<table><tr><th>
-
-### Deprecation announcement
-As of version 2.1.0, this project will no long support Python 2.7 & 3.4. We recommend migrating your projects to Python 3.5+ as soon as possible. We'll be happy to answer any questions you have in [a GitHub issue](https://github.com/logzio/logzio-python-handler/issues). <br><br>
-Thanks! <br>
-The Logz.io Integrations team
-</th></tr></table>
-
 Travis CI will build this handler and test against:
   - "3.5"
   - "3.6"
