@@ -6,7 +6,7 @@
 
 ### Deprecation announcement
 
-Version 2.1.0 of this project ends support for Python 2.7 & 3.4. We recommend migrating your projects to Python 3.5 or newer as soon as possible. We'll be happy to answer any questions you have in [a GitHub issue](https://github.com/logzio/logzio-python-handler/issues).
+Version 2.1.0 of this project ends support for Python 2.7, 3.3, 3.4. We recommend migrating your projects to Python 3.5 or newer as soon as possible. We'll be happy to answer any questions you have in [a GitHub issue](https://github.com/logzio/logzio-python-handler/issues).
 
 Thanks! <br>
 The Logz.io Integrations team
@@ -34,8 +34,6 @@ Travis CI will build this handler and test against:
   - "3.8"
 
 We can't ensure compatibility to any other version, as we can't test it automatically.
-
-**Note**: The Logz.io Python Handler no longer tests Python 3.3 (which was [end-of-lifed](https://www.python.org/dev/peps/pep-0398/#id11) in 2017).
 
 To run tests:
 
