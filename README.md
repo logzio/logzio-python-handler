@@ -6,7 +6,7 @@
 
 ### Deprecation announcement
 
-Version 2.1.0 of this project ends support for Python 2.7, 3.3, and 3.4. We recommend migrating your projects to Python 3.5 or newer as soon as possible. We'll be happy to answer any questions you have in [a GitHub issue](https://github.com/logzio/logzio-python-handler/issues).
+Version 2.1.0 of this project ends support for Python 2.7, 3.3, and 3.4. We recommend migrating your projects to Python 3.5 or newer as soon as possible. We'll be happy to answer any questions you have in [a GitHub issue](https://github.com/logzio/logzio-python-handler/issues). 
 
 Thanks! <br>
 The Logz.io Integrations team
