@@ -80,6 +80,39 @@ format={"additional_field": "value"}
  Please note, that you have to configure those parameters by this exact order.
  i.e. you cannot set Debug to true, without configuring all of the previous parameters as well.
 
+#### Dict Config
+```
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'logzioFormat': {
+            'format': '{"additional_field": "value"}',
+            'validate': False
+        }
+    },
+    'handlers': {
+        'logzio': {
+            'class': 'logzio.handler.LogzioHandler',
+            'level': 'INFO',
+            'formatter': 'logzioFormat',
+            'token': '<<LOGZIO-TOKEN>>',
+            'logs_drain_timeout': 5,
+            'url': 'https://<<LOGZIO-URL>>:8071'
+        }
+    },
+    'loggers': {
+        '': {
+            'level': 'DEBUG',
+            'handlers': ['logzio'],
+            'propogate': True
+        }
+    }
+}
+```
+Replace:
+* <<LOGZIO-TOKEN>> - your logz.io account token.
+* <<LOGZIO-URL>> - logz.io url, as described [here](https://docs.logz.io/user-guide/accounts/account-region.html#regions-and-urls).
 #### Serverless platforms
 
 If you're using a serverless function, you'll need to import and add the LogzioFlusher annotation before your sender function. To do this, in the code sample below, uncomment the `import` statement and the `@LogzioFlusher(logger)` annotation line.
