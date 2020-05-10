@@ -145,7 +145,7 @@ class LogzioSender:
                         should_backup_to_disk = False
                         break
                 except Exception as e:
-                    self.logger.error(
+                    self.logger.warning(
                         'Got exception while sending logs to Logz.io, '
                         'Try (%s/%s). Message: %s',
                         current_try + 1, number_of_retries, e)
@@ -157,7 +157,7 @@ class LogzioSender:
 
             if should_backup_to_disk and self.backup_logs:
                 # Write to file
-                self.logger.info(
+                self.logger.error(
                     'Could not send logs to Logz.io after %s tries, '
                     'backing up to local file system', number_of_retries)
                 backup_logs(logs_list, self.logger)
