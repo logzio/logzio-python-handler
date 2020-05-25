@@ -6,7 +6,7 @@
 
 ### Deprecation announcement
 
-Version 2.1.0 of this project ends support for Python 2.7, 3.3, and 3.4. We recommend migrating your projects to Python 3.5 or newer as soon as possible. We'll be happy to answer any questions you have in [a GitHub issue](https://github.com/logzio/logzio-python-handler/issues).
+Version 3.0.0 of this project ends support for Python 2.7, 3.3, and 3.4. We recommend migrating your projects to Python 3.5 or newer as soon as possible. We'll be happy to answer any questions you have in [a GitHub issue](https://github.com/logzio/logzio-python-handler/issues).
 
 Thanks! <br>
 The Logz.io Integrations team
@@ -80,6 +80,39 @@ format={"additional_field": "value"}
  Please note, that you have to configure those parameters by this exact order.
  i.e. you cannot set Debug to true, without configuring all of the previous parameters as well.
 
+#### Dict Config
+```
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'logzioFormat': {
+            'format': '{"additional_field": "value"}',
+            'validate': False
+        }
+    },
+    'handlers': {
+        'logzio': {
+            'class': 'logzio.handler.LogzioHandler',
+            'level': 'INFO',
+            'formatter': 'logzioFormat',
+            'token': '<<LOGZIO-TOKEN>>',
+            'logs_drain_timeout': 5,
+            'url': 'https://<<LOGZIO-URL>>:8071'
+        }
+    },
+    'loggers': {
+        '': {
+            'level': 'DEBUG',
+            'handlers': ['logzio'],
+            'propogate': True
+        }
+    }
+}
+```
+Replace:
+* <<LOGZIO-TOKEN>> - your logz.io account token.
+* <<LOGZIO-URL>> - logz.io url, as described [here](https://docs.logz.io/user-guide/accounts/account-region.html#regions-and-urls).
 #### Serverless platforms
 
 If you're using a serverless function, you'll need to import and add the LogzioFlusher annotation before your sender function. To do this, in the code sample below, uncomment the `import` statement and the `@LogzioFlusher(logger)` annotation line.
@@ -91,8 +124,8 @@ import logging.config
 # If you're using a serverless function, uncomment.
 # from logzio.flusher import LogzioFlusher
 
-# Say i have saved my configuration under ./myconf.conf
-logging.config.fileConfig('myconf.conf')
+# Say i have saved my configuration in a dictionary form in variable named myconf
+logging.config.dictConfig(myconf)
 logger = logging.getLogger('superAwesomeLogzioLogger')
 
 # If you're using a serverless function, uncomment.
@@ -172,9 +205,12 @@ LOGGING = {
 - logzio_type - Log type, for searching in logz.io (defaults to "python"), it cannot contain a space.
 - appname - Your django app
 
+Please note that if you are using `python 3.8` it is preferred to use the `logging.config.dictConfig` method, as mentioned in [python's documentation](https://docs.python.org/3/library/logging.config.html#configuration-file-format).
+
 ## Release Notes
-- 2.1.0
+- 3.0.0
     - Deprecated `python2.7` & `python3.4`
+    - Changed log levels on `_flush_queue()` method (@hilsenrat)
 - 2.0.15
     - Added flusher decorator for serverless platforms(@mcmasty)
     - Add support for `python3.7` and `python3.8` 
