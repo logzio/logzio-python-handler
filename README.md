@@ -124,8 +124,8 @@ import logging.config
 # If you're using a serverless function, uncomment.
 # from logzio.flusher import LogzioFlusher
 
-# Say i have saved my configuration in a dictionary form in variable named myconf
-logging.config.dictConfig(myconf)
+# Say I have saved my dictionary configuration in a variable named 'LOGGING' - see 'Dict Config' sample section
+logging.config.dictConfig(LOGGING)
 logger = logging.getLogger('superAwesomeLogzioLogger')
 
 # If you're using a serverless function, uncomment.
