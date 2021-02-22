@@ -105,7 +105,7 @@ LOGGING = {
         '': {
             'level': 'DEBUG',
             'handlers': ['logzio'],
-            'propogate': True
+            'propagate': True
         }
     }
 }
@@ -116,6 +116,7 @@ Replace:
 #### Serverless platforms
 
 If you're using a serverless function, you'll need to import and add the LogzioFlusher annotation before your sender function. To do this, in the code sample below, uncomment the `import` statement and the `@LogzioFlusher(logger)` annotation line.
+**Note:** For the LogzioFlusher to work properly, you'll need to make sure that the logzio handler is added to the root logger, like in the configuration sample above.
 
 #### Code Example
 ```python
