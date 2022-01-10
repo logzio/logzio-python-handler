@@ -15,7 +15,8 @@ class TestLogzioHandler(TestCase):
 
     def test_json(self):
         formatter = logging.Formatter(
-            '{ "appname":"%(name)s", "functionName":"%(funcName)s", \"lineNo":"%(lineno)d", "severity":"%(levelname)s", "message":"%(message)s"}')
+            '{ "appname":"%(name)s", "functionName":"%(funcName)s", \"lineNo":"%(lineno)d", "severity":"%('
+            'levelname)s", "message":"%(message)s"}')
         self.handler.setFormatter(formatter)
 
         record = logging.LogRecord(
@@ -74,7 +75,7 @@ class TestLogzioHandler(TestCase):
                 'message': 'this is a test: moo.',
                 'path_name': 'handler_test.py',
                 'type': 'python'
-             }
+            }
         )
 
     def test_extra_formatting(self):
@@ -105,7 +106,7 @@ class TestLogzioHandler(TestCase):
                 'path_name': 'handler_test.py',
                 'type': 'python',
                 'extra_key': 'extra_value'
-             }
+            }
         )
 
     def test_format_string_message(self):
@@ -133,7 +134,7 @@ class TestLogzioHandler(TestCase):
                 'message': 'this is a test: moo.',
                 'path_name': 'handler_test.py',
                 'type': 'python'
-             }
+            }
         )
 
     def test_exc(self):
@@ -147,7 +148,7 @@ class TestLogzioHandler(TestCase):
             level=0,
             pathname='handler_test.py',
             lineno=10,
-            msg="this is a test: moo.",
+            msg='exception test:',
             args=[],
             exc_info=exc_info,
             func='test_json'
@@ -158,6 +159,7 @@ class TestLogzioHandler(TestCase):
 
         formatted_message["exception"] = formatted_message["exception"].replace(os.path.abspath(__file__), "")
         formatted_message["exception"] = re.sub(r", line \d+", "", formatted_message["exception"])
+        formatted_message["message"] = formatted_message["message"].replace(os.path.abspath(__file__), "")
 
         self.assertDictEqual(
             {
@@ -165,11 +167,12 @@ class TestLogzioHandler(TestCase):
                 'line_number': 10,
                 'log_level': 'NOTSET',
                 'logger': 'my-logger',
-                'message': 'this is a test: moo.',
-                'exception': 'Traceback (most recent call last):\n\n  File "", in test_exc\n    raise ValueError("oops.")\n\nValueError: oops.\n',
+                'message': f'exception test:\nTraceback (most recent call last):\n  File "", line 142, in test_exc\n    raise '
+                           'ValueError("oops.")\nValueError: oops.',
+                'exception': 'Traceback (most recent call last):\n\n  File "", in test_exc\n    raise ValueError('
+                             '"oops.")\n\nValueError: oops.\n',
                 'path_name': 'handler_test.py',
                 'type': 'python'
             },
             formatted_message
         )
-
