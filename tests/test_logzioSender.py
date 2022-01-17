@@ -24,6 +24,8 @@ class TestLogzioSender(TestCase):
         self.logzio_listener.clear_logs_buffer()
         self.logzio_listener.clear_server_error()
         self.logs_drain_timeout = 1
+        self.retries_no = 4
+        self.retry_timeout = 2
 
         logging_configuration = {
             "version": 1,
@@ -42,7 +44,9 @@ class TestLogzioSender(TestCase):
                     'logzio_type': "type",
                     'logs_drain_timeout': self.logs_drain_timeout,
                     'url': "http://" + self.logzio_listener.get_host() + ":" + str(self.logzio_listener.get_port()),
-                    'debug': True
+                    'debug': True,
+                    'retries_no': self.retries_no,
+                    'retry_timeout': self.retry_timeout
                 }
             },
             "loggers": {
@@ -88,7 +92,7 @@ class TestLogzioSender(TestCase):
 
         self.logzio_listener.clear_server_error()
 
-        time.sleep(self.logs_drain_timeout * 2 * 4)  # Longer, because of the retry
+        time.sleep(self.logs_drain_timeout * self.retry_timeout * self.retries_no)  # Longer, because of the retry
 
         self.assertTrue(self.logzio_listener.find_log(log_message))
 
@@ -100,7 +104,7 @@ class TestLogzioSender(TestCase):
         # Make sure no file is present
         self.assertEqual(len(_find("logzio-failures-*.txt", ".")), 0)
 
-        time.sleep(2 * 2 * 2 * 2 * 2)  # All of the retries
+        time.sleep(self.retries_no*self.retry_timeout*2*2)  # All of the retries
 
         failure_files = _find("logzio-failures-*.txt", ".")
         self.assertEqual(len(failure_files), 1)
@@ -118,7 +122,7 @@ class TestLogzioSender(TestCase):
         # Make sure no file is present
         self.assertEqual(len(_find("logzio-failures-*.txt", ".")), 0)
 
-        time.sleep(2 * 2 * 2 * 2 * 2)  # All of the retries
+        time.sleep(self.retries_no*self.retry_timeout)  # All of the retries
 
         # Make sure no file was created
         self.assertEqual(len(_find("logzio-failures-*.txt", ".")), 0)

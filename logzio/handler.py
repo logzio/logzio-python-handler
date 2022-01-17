@@ -18,7 +18,9 @@ class LogzioHandler(logging.Handler):
                  url="https://listener.logz.io:8071",
                  debug=False,
                  backup_logs=True,
-                 network_timeout=10.0):
+                 network_timeout=10.0,
+                 retries_no=4,
+                 retry_timeout=2):
 
         if not token:
             raise LogzioException('Logz.io Token must be provided')
@@ -31,7 +33,9 @@ class LogzioHandler(logging.Handler):
             logs_drain_timeout=logs_drain_timeout,
             debug=debug,
             backup_logs=backup_logs,
-            network_timeout=network_timeout)
+            network_timeout=network_timeout,
+            number_of_retries=retries_no,
+            retry_timeout=retry_timeout)
         logging.Handler.__init__(self)
 
     def __del__(self):
@@ -94,10 +98,8 @@ class LogzioHandler(logging.Handler):
         if message.exc_info:
             return_json['exception'] = self.format_exception(message.exc_info)
 
-            # We want to ignore default logging formatting on exceptions
-            # As we handle those differently directly into exception field
-            message.exc_info = None
-            message.exc_text = None
+            # # We want to ignore default logging formatting on exceptions
+            # # As we handle those differently directly into exception field
 
         formatted_message = self.format(message)
         if isinstance(formatted_message, dict):
