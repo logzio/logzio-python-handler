@@ -215,6 +215,10 @@ Please note that if you are using `python 3.8` it is preferred to use the `loggi
 - 2.0.15
     - Added flusher decorator for serverless platforms(@mcmasty)
     - Add support for `python3.7` and `python3.8` 
+
+<details>
+  <summary markdown="span"> Expand to check old versions </summary>
+
 - 2.0.13 
     - Add support for `pypy` and `pypy3`(@rudaporto-olx)
     - Add timeout for requests.post() (@oseemann) 
@@ -236,3 +240,6 @@ Please note that if you are using `python 3.8` it is preferred to use the `loggi
     - Simplifications and Robustness
     - Full testing framework
 - 1.X - Beta versions
+  
+
+</details>
