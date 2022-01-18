@@ -98,7 +98,9 @@ LOGGING = {
             'formatter': 'logzioFormat',
             'token': '<<LOGZIO-TOKEN>>',
             'logs_drain_timeout': 5,
-            'url': 'https://<<LOGZIO-URL>>:8071'
+            'url': 'https://<<LOGZIO-URL>>:8071',
+            'retries_no': 4,
+            'retry_timeout': 2,
         }
     },
     'loggers': {
@@ -209,15 +211,19 @@ LOGGING = {
 Please note that if you are using `python 3.8` it is preferred to use the `logging.config.dictConfig` method, as mentioned in [python's documentation](https://docs.python.org/3/library/logging.config.html#configuration-file-format).
 
 ## Release Notes
+- 3.1.0
+    - Bug fixes
+    - Retry number and timeout is now configurable
 - 3.0.0
     - Deprecated `python2.7` & `python3.4`
     - Changed log levels on `_flush_queue()` method (@hilsenrat)
+    
+<details>
+  <summary markdown="span"> Expand to check old versions </summary>
+
 - 2.0.15
     - Added flusher decorator for serverless platforms(@mcmasty)
     - Add support for `python3.7` and `python3.8` 
-
-<details>
-  <summary markdown="span"> Expand to check old versions </summary>
 
 - 2.0.13 
     - Add support for `pypy` and `pypy3`(@rudaporto-olx)
