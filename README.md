@@ -76,6 +76,8 @@ format={"additional_field": "value"}
  - Debug flag. Set to True, will print debug messages to stdout. (defaults to "False")
  - Backup logs flag. Set to False, will disable the local backup of logs in case of failure. (defaults to "True")
  - Network timeout, in seconds, int or float, for sending the logs to logz.io. (defaults to 10)
+ - Retries number (retry_no), in seconds (defaults to 4).
+ - Retry timeout (retry_timeout) in seconds (defaults to 2).
 
  Please note, that you have to configure those parameters by this exact order.
  i.e. you cannot set Debug to true, without configuring all of the previous parameters as well.
