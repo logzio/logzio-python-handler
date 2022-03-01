@@ -40,7 +40,6 @@ class LogzioSender:
         self.token = token
         self.url = '{}/?token={}'.format(url, token)
         self.logs_drain_timeout = logs_drain_timeout
-        self.logger = get_logger(debug)
         self.stdout_logger = get_stdout_logger(debug)
         self.backup_logs = backup_logs
         self.network_timeout = network_timeout
@@ -57,7 +56,6 @@ class LogzioSender:
         self._initialize_sending_thread()
 
     def __del__(self):
-        del self.logger
         del self.stdout_logger
         del self.backup_logs
         del self.queue
@@ -93,7 +91,7 @@ class LogzioSender:
             try:
                 self._flush_queue()
             except Exception as e:
-                self.logger.debug(
+                self.stdout_logger.debug(
                     'Unexpected exception while draining queue to Logz.io, '
                     'swallowing. Exception: %s', e)
 
@@ -165,7 +163,7 @@ class LogzioSender:
                 self.stdout_logger.error(
                     'Could not send logs to Logz.io after %s tries, '
                     'backing up to local file system', self.number_of_retries)
-                backup_logs(logs_list, self.logger)
+                backup_logs(logs_list, self.stdout_logger)
 
             del logs_list
 
