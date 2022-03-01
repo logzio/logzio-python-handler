@@ -1,5 +1,5 @@
-- name: Setup Python
-  on: [push]
+name: Setup Python
+on: [push]
 jobs:
   deploy:
     runs-on: ubuntu-latest
