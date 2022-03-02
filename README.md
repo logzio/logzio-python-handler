@@ -215,7 +215,7 @@ Please note that if you are using `python 3.8` it is preferred to use the `loggi
 
 ## Release Notes
 - 3.1.1
-  - Bug fixes
+  - Bug fixes (issue #68, exception message formatting)
   - Tests CI
 
 - 3.1.0

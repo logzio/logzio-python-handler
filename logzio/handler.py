@@ -98,13 +98,14 @@ class LogzioHandler(logging.Handler):
         if message.exc_info:
             return_json['exception'] = self.format_exception(message.exc_info)
 
-            # # We want to ignore default logging formatting on exceptions
-            # # As we handle those differently directly into exception field
-            # message.exc_info = None
-            # message.exc_text = None
+        # # We want to ignore default logging formatting on exceptions
+        # # As we handle those differently directly into exception field
+
         formatted_message = self.format(message)
+        # Exception with multiple fields, apply them to log json.
         if isinstance(formatted_message, dict):
             return_json.update(formatted_message)
+        # No exception, apply default formatted message
         elif not message.exc_info:
             return_json['message'] = formatted_message
 
