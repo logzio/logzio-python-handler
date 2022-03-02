@@ -3,7 +3,7 @@
 from setuptools import setup, find_packages
 setup(
     name="logzio-python-handler",
-    version='3.1.0',
+    version='3.1.1',
     description="Logging handler to send logs to your Logz.io account with bulk SSL",
     keywords="logging handler logz.io bulk https",
     author="roiravhon",
