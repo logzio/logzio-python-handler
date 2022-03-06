@@ -1,0 +1,27 @@
+name: Pypi Release
+on:
+  workflow_run:
+    workflows: ["CI Tests"]
+    branches: [master]
+    types:
+      - completed
+  # Allows you to run this workflow manually from the Actions tab
+jobs:
+  build-and-release:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v3.0.0
+        with:
+          python-version: '3.x'
+      - name: "Install dependencies"
+        run: |
+          python3 -m pip install setuptools wheel twine
+      - name: "Build and uploads to PyPI"
+        run: |
+          python3 setup.py sdist bdist_wheel
+          python3 -m twine upload dist/*
+        env:
+          TWINE_USERNAME: __token__
+          TWINE_PASSWORD: ${{ secrets.PYPI_REPO_TOKEN }}
