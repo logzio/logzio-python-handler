@@ -159,7 +159,6 @@ class TestLogzioHandler(TestCase):
 
         formatted_message["exception"] = formatted_message["exception"].replace(os.path.abspath(__file__), "")
         formatted_message["exception"] = re.sub(r", line \d+", "", formatted_message["exception"])
-        formatted_message["message"] = formatted_message["message"].replace(os.path.abspath(__file__), "")
 
         self.assertDictEqual(
             {
@@ -167,10 +166,8 @@ class TestLogzioHandler(TestCase):
                 'line_number': 10,
                 'log_level': 'NOTSET',
                 'logger': 'my-logger',
-                'message': f'exception test:\nTraceback (most recent call last):\n  File "", line 142, in test_exc\n    raise '
-                           'ValueError("oops.")\nValueError: oops.',
-                'exception': 'Traceback (most recent call last):\n\n  File "", in test_exc\n    raise ValueError('
-                             '"oops.")\n\nValueError: oops.\n',
+                'message': 'exception test:',
+                'exception': 'Traceback (most recent call last):\n\n  File "", in test_exc\n    raise ValueError("oops.")\n\nValueError: oops.\n',
                 'path_name': 'handler_test.py',
                 'type': 'python'
             },

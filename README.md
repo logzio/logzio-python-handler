@@ -32,6 +32,7 @@ Travis CI will build this handler and test against:
   - "3.6"
   - "3.7"
   - "3.8"
+  - "3.9"
 
 We can't ensure compatibility to any other version, as we can't test it automatically.
 
@@ -76,7 +77,7 @@ format={"additional_field": "value"}
  - Debug flag. Set to True, will print debug messages to stdout. (defaults to "False")
  - Backup logs flag. Set to False, will disable the local backup of logs in case of failure. (defaults to "True")
  - Network timeout, in seconds, int or float, for sending the logs to logz.io. (defaults to 10)
- - Retries number (retry_no), in seconds (defaults to 4).
+ - Retries number (retry_no, defaults to 4).
  - Retry timeout (retry_timeout) in seconds (defaults to 2).
 
  Please note, that you have to configure those parameters by this exact order.
@@ -213,15 +214,19 @@ LOGGING = {
 Please note that if you are using `python 3.8` it is preferred to use the `logging.config.dictConfig` method, as mentioned in [python's documentation](https://docs.python.org/3/library/logging.config.html#configuration-file-format).
 
 ## Release Notes
+- 3.1.1
+  - Bug fixes (issue #68, exception message formatting)
+  - Added CI: Tests and Auto release 
+
 - 3.1.0
     - Bug fixes
     - Retry number and timeout is now configurable
-- 3.0.0
-    - Deprecated `python2.7` & `python3.4`
-    - Changed log levels on `_flush_queue()` method (@hilsenrat)
     
 <details>
   <summary markdown="span"> Expand to check old versions </summary>
+- 3.0.0
+    - Deprecated `python2.7` & `python3.4`
+    - Changed log levels on `_flush_queue()` method (@hilsenrat)
 
 - 2.0.15
     - Added flusher decorator for serverless platforms(@mcmasty)
