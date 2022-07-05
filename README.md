@@ -214,6 +214,9 @@ LOGGING = {
 Please note that if you are using `python 3.8` it is preferred to use the `logging.config.dictConfig` method, as mentioned in [python's documentation](https://docs.python.org/3/library/logging.config.html#configuration-file-format).
 
 ## Release Notes
+- 4.0.0
+  - Add ability automatically attach trace context to the logs.
+
 - 3.1.1
   - Bug fixes (issue #68, exception message formatting)
   - Added CI: Tests and Auto release 

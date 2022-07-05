@@ -8,6 +8,8 @@ import logging.handlers
 from .sender import LogzioSender
 from .exceptions import LogzioException
 
+from opentelemetry.instrumentation.logging import LoggingInstrumentor
+
 
 class LogzioHandler(logging.Handler):
 
@@ -20,12 +22,16 @@ class LogzioHandler(logging.Handler):
                  backup_logs=True,
                  network_timeout=10.0,
                  retries_no=4,
-                 retry_timeout=2):
+                 retry_timeout=2,
+                 add_context=False):
 
         if not token:
             raise LogzioException('Logz.io Token must be provided')
 
         self.logzio_type = logzio_type
+
+        if add_context:
+            LoggingInstrumentor().instrument(set_logging_format=True)
 
         self.logzio_sender = LogzioSender(
             token=token,

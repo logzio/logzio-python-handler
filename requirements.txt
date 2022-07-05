@@ -1,1 +1,3 @@
 requests>=2.27.0
+protobuf==3.20.1
+opentelemetry-instrumentation-logging==0.32b0
