@@ -214,7 +214,7 @@ LOGGING = {
 
 ## Trace context
 
-If you're sending traces with OpenTelemetry intstrumentation (auto or manual), you can correlate your logs with the trace context.
+If you're sending traces with OpenTelemetry instrumentation (auto or manual), you can correlate your logs with the trace context.
 That way, your logs will have traces data in it, such as service name, span id and trace id.
 To enable this feature, set the `add_context` param in your handler configuration to `True`, like in this example:
 
