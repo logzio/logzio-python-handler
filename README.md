@@ -212,7 +212,7 @@ LOGGING = {
 - logzio_type - Log type, for searching in logz.io (defaults to "python"), it cannot contain a space.
 - appname - Your django app
 
-## Traces context
+## Trace context
 
 If you're sending traces with Opentelemetry intstrumentation (automated or manual), you can coorelate your logs with trace context.
 That way, your logs will have traces data in it, such as service name, span id and trace id.
