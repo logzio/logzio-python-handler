@@ -214,9 +214,9 @@ LOGGING = {
 
 ## Trace context
 
-If you're sending traces with Opentelemetry intstrumentation (automated or manual), you can coorelate your logs with trace context.
+If you're sending traces with OpenTelemetry intstrumentation (auto or manual), you can correlate your logs with the trace context.
 That way, your logs will have traces data in it, such as service name, span id and trace id.
-To enable this feature, set the `add_context` param in your handler configuration to True, like in this example:
+To enable this feature, set the `add_context` param in your handler configuration to `true`, like in this example:
 
 ```python
 LOGGING = {
@@ -252,7 +252,7 @@ LOGGING = {
 }
 ```
 
-Please note that if you are using `python 3.8` it is preferred to use the `logging.config.dictConfig` method, as mentioned in [python's documentation](https://docs.python.org/3/library/logging.config.html#configuration-file-format).
+Please note that if you are using `python 3.8`, it is preferred to use the `logging.config.dictConfig` method, as mentioned in [python's documentation](https://docs.python.org/3/library/logging.config.html#configuration-file-format).
 
 ## Release Notes
 - 4.0.0
