@@ -100,6 +100,7 @@ LOGGING = {
             'level': 'INFO',
             'formatter': 'logzioFormat',
             'token': '<<LOGZIO-TOKEN>>',
+            'logzio_type': 'python-handler',
             'logs_drain_timeout': 5,
             'url': 'https://<<LOGZIO-URL>>:8071',
             'retries_no': 4,
@@ -211,9 +212,52 @@ LOGGING = {
 - logzio_type - Log type, for searching in logz.io (defaults to "python"), it cannot contain a space.
 - appname - Your django app
 
-Please note that if you are using `python 3.8` it is preferred to use the `logging.config.dictConfig` method, as mentioned in [python's documentation](https://docs.python.org/3/library/logging.config.html#configuration-file-format).
+## Trace context
+
+If you're sending traces with OpenTelemetry instrumentation (auto or manual), you can correlate your logs with the trace context.
+That way, your logs will have traces data in it, such as service name, span id and trace id.
+To enable this feature, set the `add_context` param in your handler configuration to `True`, like in this example:
+
+```python
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'logzioFormat': {
+            'format': '{"additional_field": "value"}',
+            'validate': False
+        }
+    },
+    'handlers': {
+        'logzio': {
+            'class': 'logzio.handler.LogzioHandler',
+            'level': 'INFO',
+            'formatter': 'logzioFormat',
+            'token': '<<LOGZIO-TOKEN>>',
+            'logzio_type': 'python-handler',
+            'logs_drain_timeout': 5,
+            'url': 'https://<<LOGZIO-URL>>:8071',
+            'retries_no': 4,
+            'retry_timeout': 2,
+            'add_context': True
+        }
+    },
+    'loggers': {
+        '': {
+            'level': 'DEBUG',
+            'handlers': ['logzio'],
+            'propagate': True
+        }
+    }
+}
+```
+
+Please note that if you are using `python 3.8`, it is preferred to use the `logging.config.dictConfig` method, as mentioned in [python's documentation](https://docs.python.org/3/library/logging.config.html#configuration-file-format).
 
 ## Release Notes
+- 4.0.0
+  - Add ability to automatically attach trace context to the logs.
+
 - 3.1.1
   - Bug fixes (issue #68, exception message formatting)
   - Added CI: Tests and Auto release 
