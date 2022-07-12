@@ -7,9 +7,7 @@ import logging.handlers
 
 from .sender import LogzioSender
 from .exceptions import LogzioException
-
-from opentelemetry.instrumentation.logging import LoggingInstrumentor
-
+from .trace_context import TraceContext
 
 class LogzioHandler(logging.Handler):
 
@@ -31,7 +29,7 @@ class LogzioHandler(logging.Handler):
         self.logzio_type = logzio_type
 
         if add_context:
-            LoggingInstrumentor().instrument(set_logging_format=True)
+            trace_context = TraceContext(url)
 
         self.logzio_sender = LogzioSender(
             token=token,
