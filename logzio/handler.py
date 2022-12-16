@@ -79,6 +79,8 @@ class LogzioHandler(logging.Handler):
     def format(self, record):
         message = super(LogzioHandler, self).format(record)
         try:
+            if record.exc_info:
+                message = message.split("\nTraceback")[0]  # only keep the original formatted message part
             return json.loads(message)
         except (TypeError, ValueError):
             return message
