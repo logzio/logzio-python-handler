@@ -257,7 +257,7 @@ Please note that if you are using `python 3.8`, it is preferred to use the `logg
 ## Release Notes
 - 4.0.1
   - Updated `protobuf>=3.20.2`.
-  - Added `dependency setuptools>=65.5.1`
+  - Added dependency `setuptools>=65.5.1`
   
 - 4.0.0
   - Add ability to automatically attach trace context to the logs.
