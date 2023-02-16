@@ -255,6 +255,10 @@ LOGGING = {
 Please note that if you are using `python 3.8`, it is preferred to use the `logging.config.dictConfig` method, as mentioned in [python's documentation](https://docs.python.org/3/library/logging.config.html#configuration-file-format).
 
 ## Release Notes
+- 4.0.1
+  - Updated `protobuf>=3.20.2`.
+  - Added dependency `setuptools>=65.5.1`
+  
 - 4.0.0
   - Add ability to automatically attach trace context to the logs.
 
@@ -262,12 +266,13 @@ Please note that if you are using `python 3.8`, it is preferred to use the `logg
   - Bug fixes (issue #68, exception message formatting)
   - Added CI: Tests and Auto release 
 
+<details>
+  <summary markdown="span"> Expand to check old versions </summary>
+
 - 3.1.0
     - Bug fixes
     - Retry number and timeout is now configurable
     
-<details>
-  <summary markdown="span"> Expand to check old versions </summary>
 - 3.0.0
     - Deprecated `python2.7` & `python3.4`
     - Changed log levels on `_flush_queue()` method (@hilsenrat)
