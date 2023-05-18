@@ -255,6 +255,9 @@ LOGGING = {
 Please note that if you are using `python 3.8`, it is preferred to use the `logging.config.dictConfig` method, as mentioned in [python's documentation](https://docs.python.org/3/library/logging.config.html#configuration-file-format).
 
 ## Release Notes
+
+- 4.0.2
+  - Fix bug for logging exceptions ([#76](https://github.com/logzio/logzio-python-handler/pull/76))
 - 4.0.1
   - Updated `protobuf>=3.20.2`.
   - Added dependency `setuptools>=65.5.1`
@@ -262,13 +265,15 @@ Please note that if you are using `python 3.8`, it is preferred to use the `logg
 - 4.0.0
   - Add ability to automatically attach trace context to the logs.
 
-- 3.1.1
-  - Bug fixes (issue #68, exception message formatting)
-  - Added CI: Tests and Auto release 
 
 <details>
   <summary markdown="span"> Expand to check old versions </summary>
 
+
+- 3.1.1
+  - Bug fixes (issue #68, exception message formatting)
+  - Added CI: Tests and Auto release
+  
 - 3.1.0
     - Bug fixes
     - Retry number and timeout is now configurable
