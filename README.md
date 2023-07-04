@@ -26,6 +26,11 @@ In case the logs failed to be sent to Logz.io after a couple of tries, they will
 pip install logzio-python-handler
 ```
 
+If you'd like to use [Trace context](https://github.com/logzio/logzio-python-handler#trace-context) then you need to install the OpenTelemetry logging instrumentation dependecy by running the following command:
+
+```bash
+pip install logzio-python-handler[opentelemetry-logging]
+```
 ## Tested Python Versions
 Travis CI will build this handler and test against:
   - "3.5"
@@ -33,6 +38,8 @@ Travis CI will build this handler and test against:
   - "3.7"
   - "3.8"
   - "3.9"
+  - "3.10"
+  - "3.11"
 
 We can't ensure compatibility to any other version, as we can't test it automatically.
 
@@ -216,6 +223,12 @@ LOGGING = {
 
 If you're sending traces with OpenTelemetry instrumentation (auto or manual), you can correlate your logs with the trace context.
 That way, your logs will have traces data in it, such as service name, span id and trace id.
+
+Make sure to install the OpenTelemetry logging instrumentation dependecy by running the following command:
+
+```bash
+pip install logzio-python-handler[opentelemetry-logging]
+```
 To enable this feature, set the `add_context` param in your handler configuration to `True`, like in this example:
 
 ```python
