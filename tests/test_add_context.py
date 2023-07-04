@@ -27,7 +27,7 @@ class TestAddContext(TestCase):
         self.logs_drain_timeout = 1
         self.retries_no = 4
         self.retry_timeout = 2
-
+        self.add_context = True
         logging_configuration = {
             "version": 1,
             "formatters": {
@@ -48,7 +48,7 @@ class TestAddContext(TestCase):
                     'debug': True,
                     'retries_no': self.retries_no,
                     'retry_timeout': self.retry_timeout,
-                    'add_context': True
+                    'add_context': self.add_context
                 }
             },
             "loggers": {
@@ -66,6 +66,7 @@ class TestAddContext(TestCase):
             os.remove(curr_file)
 
     def test_add_context(self):
+
         log_message = "this log should have a trace context"
         self.logger.info(log_message)
         time.sleep(self.logs_drain_timeout * 2)
@@ -77,5 +78,5 @@ class TestAddContext(TestCase):
                     self.assertTrue('otelSpanID' in log_dict)
                     self.assertTrue('otelTraceID' in log_dict)
                     self.assertTrue('otelServiceName' in log_dict)
-                except AssertionError:
-                    pass
+                except AssertionError as err:
+                    print(err)
