@@ -54,7 +54,7 @@ $ tox
 
 ## Python configuration
 #### Config File
-```
+```python
 [handlers]
 keys=LogzioHandler
 
@@ -91,7 +91,7 @@ format={"additional_field": "value"}
  i.e. you cannot set Debug to true, without configuring all of the previous parameters as well.
 
 #### Dict Config
-```
+```python
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
@@ -161,13 +161,13 @@ Please note, that you cannot override default fields by the python logger (i.e. 
 For example:
 
 
-```
+```python
 logger.info('Warning', extra={'extra_key':'extra_value'})
 ```
 #### Dynamic Extra Fields
 The following additional code example offers the same functionlites that availavle with the extra parameter to add additional fields to logs. The difference is that it uses logging filters so it will add the fields that are declared key-values from the extra dictionary to every log that's generated after adding the fliter. You can keep updating the logs with additional filters. 
 
-```
+```python
 class ExtraFieldsLogFilter(logging.Filter):
 
     def __init__(self, extra: dict, *args, **kwargs):
@@ -192,7 +192,7 @@ def main():
 ```
 
 ## Django configuration
-```
+```python
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
