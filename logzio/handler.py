@@ -8,7 +8,6 @@ import logging.handlers
 from .sender import LogzioSender
 from .exceptions import LogzioException
 
-from opentelemetry.instrumentation.logging import LoggingInstrumentor
 
 
 class LogzioHandler(logging.Handler):
@@ -31,8 +30,11 @@ class LogzioHandler(logging.Handler):
         self.logzio_type = logzio_type
 
         if add_context:
-            LoggingInstrumentor().instrument(set_logging_format=True)
-
+            try:
+                from opentelemetry.instrumentation.logging import LoggingInstrumentor
+                LoggingInstrumentor().instrument(set_logging_format=True)
+            except ImportError:
+                print("Can't add trace context. OpenTelemetry logging optional package isn't installed.\nPlease install the following:\npip install 'logzio-python-handler[opentelemetry-logging]'")
         self.logzio_sender = LogzioSender(
             token=token,
             url=url,

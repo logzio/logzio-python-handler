@@ -3,7 +3,7 @@
 from setuptools import setup, find_packages
 setup(
     name="logzio-python-handler",
-    version='4.0.2',
+    version='4.0.3',
     description="Logging handler to send logs to your Logz.io account with bulk SSL",
     keywords="logging handler logz.io bulk https",
     author="roiravhon",
@@ -14,9 +14,11 @@ setup(
     packages=find_packages(),
     install_requires=[
         "requests>=2.27.0",
-        "protobuf>=3.20.2",
-        "opentelemetry-instrumentation-logging==0.32b0"
+        "protobuf>=3.20.2"
     ],
+    extras_require={
+        "opentelemetry-logging": ["opentelemetry-instrumentation-logging==0.39b0"]
+    },
     test_requires=[
         "future"
     ],
