@@ -289,7 +289,12 @@ LOGGING = {
 Please note that if you are using `python 3.8`, it is preferred to use the `logging.config.dictConfig` method, as mentioned in [python's documentation](https://docs.python.org/3/library/logging.config.html#configuration-file-format).
 
 ## Release Notes
-
+- 4.0.3
+  - Add ability to dynamically attach extra fields to the logs.
+  - Import opentelemetry logging dependency only if trace context is enabled and dependency is installed manually.
+    - Updated `opentelemetry-instrumentation-logging==0.39b0`
+  - Updated `setuptools>=68.0.0`
+  - Added tests for Python versions: 3.9, 3.10, 3.11
 - 4.0.2
   - Fix bug for logging exceptions ([#76](https://github.com/logzio/logzio-python-handler/pull/76))
 - 4.0.1
