@@ -8,7 +8,15 @@ import logging.handlers
 from .sender import LogzioSender
 from .exceptions import LogzioException
 
+class ExtraFieldsLogFilter(logging.Filter):
 
+    def __init__(self, extra: dict, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.extra = extra
+
+    def filter(self, record):
+        record.__dict__.update(self.extra)
+        return True
 
 class LogzioHandler(logging.Handler):
 

@@ -168,15 +168,7 @@ logger.info('Warning', extra={'extra_key':'extra_value'})
 The following additional code example offers the same functionlites that availavle with the extra parameter to add additional fields to logs. The difference is that it uses logging filters so it will add the fields that are declared key-values from the extra dictionary to every log that's generated after adding the fliter. You can keep updating the logs with additional filters. 
 
 ```python
-class ExtraFieldsLogFilter(logging.Filter):
-
-    def __init__(self, extra: dict, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.extra = extra
-
-    def filter(self, record):
-        record.__dict__.update(self.extra)
-        return True
+from logzio.handler import ExtraFieldsLogFilter
 
 def main():
     logger.info("Test log")  # Outputs: {"message":"Test log"}
@@ -188,7 +180,9 @@ def main():
     error_fields = {"err_msg":"Failed to run due to exception.","status_code":500}
     logger.addFilter(ExtraFieldsLogFilter(error_fields))
     logger.error("Error test log")  # Outputs: {"message":"Error test log","foo":"bar","counter":1,"err_msg":"Failed to run due to exception.","status_code":500}
-
+    # If you'd like to remove filters from future logs using the logger.removeFilter option:
+    logger.removeFilter(ExtraFieldsLogFilter(error_fields))
+    logger.debug("Debug test log") # Outputs: {"message":"Debug test log","foo":"bar","counter":1}
 ```
 
 ## Django configuration
