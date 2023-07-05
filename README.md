@@ -165,7 +165,9 @@ For example:
 logger.info('Warning', extra={'extra_key':'extra_value'})
 ```
 #### Dynamic Extra Fields
-The following additional code example offers the same functionlites that availavle with the extra parameter to add additional fields to logs. The difference is that it uses logging filters so it will add the fields that are declared key-values from the extra dictionary to every log that's generated after adding the fliter. You can keep updating the logs with additional filters. 
+If you prefer, you can add extra fields to your logs dynamically, and not pre-defining them in the configuration.
+This way, you can allow different logs to have different extra fields.
+See the following code example:
 
 ```python
 from logzio.handler import ExtraFieldsLogFilter
