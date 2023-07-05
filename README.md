@@ -171,6 +171,7 @@ The following additional code example offers the same functionlites that availav
 from logzio.handler import ExtraFieldsLogFilter
 
 def main():
+
     logger.info("Test log")  # Outputs: {"message":"Test log"}
     
     extra_fields = {"foo":"bar","counter":1}
@@ -183,6 +184,7 @@ def main():
     # If you'd like to remove filters from future logs using the logger.removeFilter option:
     logger.removeFilter(ExtraFieldsLogFilter(error_fields))
     logger.debug("Debug test log") # Outputs: {"message":"Debug test log","foo":"bar","counter":1}
+
 ```
 
 ## Django configuration

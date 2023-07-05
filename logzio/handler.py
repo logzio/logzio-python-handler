@@ -8,6 +8,7 @@ import logging.handlers
 from .sender import LogzioSender
 from .exceptions import LogzioException
 
+
 class ExtraFieldsLogFilter(logging.Filter):
 
     def __init__(self, extra: dict, *args, **kwargs):
@@ -17,6 +18,7 @@ class ExtraFieldsLogFilter(logging.Filter):
     def filter(self, record):
         record.__dict__.update(self.extra)
         return True
+
 
 class LogzioHandler(logging.Handler):
 
@@ -104,7 +106,7 @@ pip install 'logzio-python-handler[opentelemetry-logging]'""")
     def format_message(self, message):
         now = datetime.datetime.utcnow()
         timestamp = now.strftime('%Y-%m-%dT%H:%M:%S') + \
-            '.%03d' % (now.microsecond / 1000) + 'Z'
+                    '.%03d' % (now.microsecond / 1000) + 'Z'
 
         return_json = {
             'logger': message.name,

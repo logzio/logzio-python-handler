@@ -1,1 +1,0 @@
-{"logger": "test", "line_number": 102, "path_name": "/Users/raulgurshumov/Desktop/logzio/logzio-python-handler/tests/test_logzioSender.py", "log_level": "INFO", "type": "type", "message": "Backup to local filesystem", "@timestamp": "2023-07-04T08:07:58.949Z", "key": "value"}
