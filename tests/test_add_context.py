@@ -28,7 +28,7 @@ class TestAddContext(TestCase):
         self.retries_no = 4
         self.retry_timeout = 2
         self.add_context = True
-        logging_configuration = {
+        self.logging_configuration = {
             "version": 1,
             "formatters": {
                 "logzio": {
@@ -59,14 +59,14 @@ class TestAddContext(TestCase):
             }
         }
 
-        logging.config.dictConfig(logging_configuration)
+        logging.config.dictConfig(self.logging_configuration)
         self.logger = logging.getLogger('test')
 
         for curr_file in _find("logzio-failures-*.txt", "."):
             os.remove(curr_file)
 
     def test_add_context(self):
-
+        # Logging configuration of add_context default to True
         log_message = "this log should have a trace context"
         self.logger.info(log_message)
         time.sleep(self.logs_drain_timeout * 2)
@@ -78,5 +78,24 @@ class TestAddContext(TestCase):
                     self.assertTrue('otelSpanID' in log_dict)
                     self.assertTrue('otelTraceID' in log_dict)
                     self.assertTrue('otelServiceName' in log_dict)
+                except AssertionError as err:
+                    print(err)
+
+    def test_ignore_context(self):
+        # Set add_context to False and reconfigure the logger as it defaults to True
+        self.logging_configuration["handlers"]["LogzioHandler"]["add_context"] = False
+        logging.config.dictConfig(self.logging_configuration)
+        self.logger = logging.getLogger('test')
+        log_message = "this log should not have a trace context"
+        self.logger.info(log_message)
+        time.sleep(self.logs_drain_timeout * 2)
+        logs_list = self.logzio_listener.logs_list
+        for current_log in logs_list:
+            if log_message in current_log:
+                log_dict = json.loads(current_log)
+                try:
+                    self.assertFalse('otelSpanID' in log_dict)
+                    self.assertFalse('otelTraceID' in log_dict)
+                    self.assertFalse('otelServiceName' in log_dict)
                 except AssertionError as err:
                     print(err)

@@ -167,6 +167,7 @@ logger.info('Warning', extra={'extra_key':'extra_value'})
 #### Dynamic Extra Fields
 If you prefer, you can add extra fields to your logs dynamically, and not pre-defining them in the configuration.
 This way, you can allow different logs to have different extra fields.
+
 See the following code example:
 
 ```python
@@ -291,7 +292,7 @@ LOGGING = {
 Please note that if you are using `python 3.8`, it is preferred to use the `logging.config.dictConfig` method, as mentioned in [python's documentation](https://docs.python.org/3/library/logging.config.html#configuration-file-format).
 
 ## Release Notes
-- 4.0.3
+- 4.1.0
   - Add ability to dynamically attach extra fields to the logs.
   - Import opentelemetry logging dependency only if trace context is enabled and dependency is installed manually.
     - Updated `opentelemetry-instrumentation-logging==0.39b0`
