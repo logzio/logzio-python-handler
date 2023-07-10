@@ -8,7 +8,16 @@ import logging.handlers
 from .sender import LogzioSender
 from .exceptions import LogzioException
 
-from opentelemetry.instrumentation.logging import LoggingInstrumentor
+
+class ExtraFieldsLogFilter(logging.Filter):
+
+    def __init__(self, extra: dict, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.extra = extra
+
+    def filter(self, record):
+        record.__dict__.update(self.extra)
+        return True
 
 
 class LogzioHandler(logging.Handler):
@@ -31,8 +40,14 @@ class LogzioHandler(logging.Handler):
         self.logzio_type = logzio_type
 
         if add_context:
-            LoggingInstrumentor().instrument(set_logging_format=True)
-
+            try:
+                from opentelemetry.instrumentation.logging import LoggingInstrumentor
+                LoggingInstrumentor().instrument(set_logging_format=True)
+            except ImportError:
+                print("""Can't add trace context.
+OpenTelemetry logging optional package isn't installed.
+Please install the following package:
+pip install 'logzio-python-handler[opentelemetry-logging]'""")
         self.logzio_sender = LogzioSender(
             token=token,
             url=url,
@@ -91,7 +106,7 @@ class LogzioHandler(logging.Handler):
     def format_message(self, message):
         now = datetime.datetime.utcnow()
         timestamp = now.strftime('%Y-%m-%dT%H:%M:%S') + \
-            '.%03d' % (now.microsecond / 1000) + 'Z'
+                    '.%03d' % (now.microsecond / 1000) + 'Z'
 
         return_json = {
             'logger': message.name,

@@ -26,6 +26,11 @@ In case the logs failed to be sent to Logz.io after a couple of tries, they will
 pip install logzio-python-handler
 ```
 
+If you'd like to use [Trace context](https://github.com/logzio/logzio-python-handler#trace-context) then you need to install the OpenTelemetry logging instrumentation dependecy by running the following command:
+
+```bash
+pip install logzio-python-handler[opentelemetry-logging]
+```
 ## Tested Python Versions
 Travis CI will build this handler and test against:
   - "3.5"
@@ -33,6 +38,8 @@ Travis CI will build this handler and test against:
   - "3.7"
   - "3.8"
   - "3.9"
+  - "3.10"
+  - "3.11"
 
 We can't ensure compatibility to any other version, as we can't test it automatically.
 
@@ -47,7 +54,7 @@ $ tox
 
 ## Python configuration
 #### Config File
-```
+```python
 [handlers]
 keys=LogzioHandler
 
@@ -84,7 +91,7 @@ format={"additional_field": "value"}
  i.e. you cannot set Debug to true, without configuring all of the previous parameters as well.
 
 #### Dict Config
-```
+```python
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
@@ -154,13 +161,37 @@ Please note, that you cannot override default fields by the python logger (i.e. 
 For example:
 
 
-```
+```python
 logger.info('Warning', extra={'extra_key':'extra_value'})
 ```
+#### Dynamic Extra Fields
+If you prefer, you can add extra fields to your logs dynamically, and not pre-defining them in the configuration.
+This way, you can allow different logs to have different extra fields.
 
+See the following code example:
+
+```python
+from logzio.handler import ExtraFieldsLogFilter
+
+def main():
+
+    logger.info("Test log")  # Outputs: {"message":"Test log"}
+    
+    extra_fields = {"foo":"bar","counter":1}
+    logger.addFilter(ExtraFieldsLogFilter(extra_fields))
+    logger.warning("Warning test log")  # Outputs: {"message":"Warning test log","foo":"bar","counter":1}
+    
+    error_fields = {"err_msg":"Failed to run due to exception.","status_code":500}
+    logger.addFilter(ExtraFieldsLogFilter(error_fields))
+    logger.error("Error test log")  # Outputs: {"message":"Error test log","foo":"bar","counter":1,"err_msg":"Failed to run due to exception.","status_code":500}
+    # If you'd like to remove filters from future logs using the logger.removeFilter option:
+    logger.removeFilter(ExtraFieldsLogFilter(error_fields))
+    logger.debug("Debug test log") # Outputs: {"message":"Debug test log","foo":"bar","counter":1}
+
+```
 
 ## Django configuration
-```
+```python
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
@@ -216,6 +247,12 @@ LOGGING = {
 
 If you're sending traces with OpenTelemetry instrumentation (auto or manual), you can correlate your logs with the trace context.
 That way, your logs will have traces data in it, such as service name, span id and trace id.
+
+Make sure to install the OpenTelemetry logging instrumentation dependecy by running the following command:
+
+```bash
+pip install logzio-python-handler[opentelemetry-logging]
+```
 To enable this feature, set the `add_context` param in your handler configuration to `True`, like in this example:
 
 ```python
@@ -255,7 +292,12 @@ LOGGING = {
 Please note that if you are using `python 3.8`, it is preferred to use the `logging.config.dictConfig` method, as mentioned in [python's documentation](https://docs.python.org/3/library/logging.config.html#configuration-file-format).
 
 ## Release Notes
-
+- 4.1.0
+  - Add ability to dynamically attach extra fields to the logs.
+  - Import opentelemetry logging dependency only if trace context is enabled and dependency is installed manually.
+    - Updated `opentelemetry-instrumentation-logging==0.39b0`
+  - Updated `setuptools>=68.0.0`
+  - Added tests for Python versions: 3.9, 3.10, 3.11
 - 4.0.2
   - Fix bug for logging exceptions ([#76](https://github.com/logzio/logzio-python-handler/pull/76))
 - 4.0.1
