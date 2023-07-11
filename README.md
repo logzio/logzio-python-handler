@@ -26,7 +26,7 @@ In case the logs failed to be sent to Logz.io after a couple of tries, they will
 pip install logzio-python-handler
 ```
 
-If you'd like to use [Trace context](#trace-context) then you need to install the OpenTelemetry logging instrumentation dependecy by running the following command:
+If you'd like to use [Trace context](#trace-context), you need to install the OpenTelemetry logging instrumentation dependency by running the following command:
 
 ```bash
 pip install logzio-python-handler[opentelemetry-logging]
