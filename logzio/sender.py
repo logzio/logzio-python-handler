@@ -9,7 +9,6 @@ from threading import Thread, enumerate
 
 import requests
 
-from .logger import get_logger
 from .logger import get_stdout_logger
 
 if sys.version[0] == '2':
