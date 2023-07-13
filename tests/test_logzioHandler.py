@@ -137,7 +137,10 @@ class TestLogzioHandler(TestCase):
             }
         )
 
-    def test_exc(self):
+    def test_exception(self):
+        formatter = logging.Formatter('{"tags": ["staging", "experimental"], "appname": "my-service"}', validate=False)
+        self.handler.setFormatter(formatter)
+        
         try:
             raise ValueError("oops.")
         except:
@@ -163,13 +166,15 @@ class TestLogzioHandler(TestCase):
         self.assertDictEqual(
             {
                 '@timestamp': None,
+                'appname': 'my-service',
                 'line_number': 10,
                 'log_level': 'NOTSET',
                 'logger': 'my-logger',
                 'message': 'exception test:',
-                'exception': 'Traceback (most recent call last):\n\n  File "", in test_exc\n    raise ValueError("oops.")\n\nValueError: oops.\n',
+                'exception': 'Traceback (most recent call last):\n\n  File "", in test_exception\n    raise ValueError("oops.")\n\nValueError: oops.\n',
                 'path_name': 'handler_test.py',
-                'type': 'python'
+                'type': 'python',
+                'tags': ['staging', 'experimental']
             },
             formatted_message
         )
