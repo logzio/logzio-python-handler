@@ -16,5 +16,5 @@ class LogzioFlusher(logging.Logger):
                 self.logger.exception('call failed: {}'.format(e))
                 raise
             finally:
-                [h.flush() for h in self.logger.root.handlers]
+                [h.flush() for h in self.logger.handlers]
         return wrapper
