@@ -286,6 +286,8 @@ LOGGING = {
 
 
 ## Release Notes
+- 4.1.1
+  - Fix flusher issues with serverless
 - 4.1.0
   - Add ability to dynamically attach extra fields to the logs.
   - Import opentelemetry logging dependency only if trace context is enabled and dependency is installed manually.
