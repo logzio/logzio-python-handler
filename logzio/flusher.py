@@ -17,4 +17,5 @@ class LogzioFlusher(logging.Logger):
                 raise
             finally:
                 [h.flush() for h in self.logger.handlers]
+
         return wrapper

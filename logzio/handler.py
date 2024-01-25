@@ -1,12 +1,12 @@
-import sys
+import datetime
 import json
 import logging
-import datetime
-import traceback
 import logging.handlers
+import sys
+import traceback
 
-from .sender import LogzioSender
 from .exceptions import LogzioException
+from .sender import LogzioSender
 
 
 class ExtraFieldsLogFilter(logging.Filter):
@@ -41,7 +41,8 @@ class LogzioHandler(logging.Handler):
 
         if add_context:
             try:
-                from opentelemetry.instrumentation.logging import LoggingInstrumentor
+                from opentelemetry.instrumentation.logging import \
+                    LoggingInstrumentor
                 LoggingInstrumentor().instrument(set_logging_format=True)
             except ImportError:
                 print("""Can't add trace context.
@@ -104,7 +105,7 @@ pip install 'logzio-python-handler[opentelemetry-logging]'""")
         return '\n'.join(traceback.format_exception(*exc_info))
 
     def format_message(self, message):
-        now = datetime.datetime.utcnow()
+        now = datetime.datetime.now(datetime.timezone.utc)
         timestamp = now.strftime('%Y-%m-%dT%H:%M:%S') + \
                     '.%03d' % (now.microsecond / 1000) + 'Z'
 

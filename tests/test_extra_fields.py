@@ -1,10 +1,12 @@
 import fnmatch
+import json
 import logging.config
 import os
 import time
-import json
 from unittest import TestCase
+
 from logzio.handler import ExtraFieldsLogFilter
+
 from .mockLogzioListener import listener
 
 
@@ -108,7 +110,7 @@ class TestExtraFieldsFilter(TestCase):
         log_message = "this log should have additional fields"
         self.logger.info(log_message)
 
-        extra_fields = {"counter":1}
+        extra_fields = {"counter": 1}
         self.logger.addFilter(ExtraFieldsLogFilter(extra=extra_fields))
         filtered_log_message = "this log should have multiple additional fields"
         self.logger.info(filtered_log_message)

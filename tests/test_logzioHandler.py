@@ -1,11 +1,9 @@
+import logging
 import os
+import re
+import sys
 from unittest import TestCase
 
-import logging
-
-import sys
-
-import re
 from logzio.handler import LogzioHandler
 
 
@@ -140,7 +138,7 @@ class TestLogzioHandler(TestCase):
     def test_exception(self):
         formatter = logging.Formatter('{"tags": ["staging", "experimental"], "appname": "my-service"}', validate=False)
         self.handler.setFormatter(formatter)
-        
+
         try:
             raise ValueError("oops.")
         except:

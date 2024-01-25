@@ -15,4 +15,5 @@ class PersistentFlags:
     def get_server_error(self):
         return self.server_error
 
+
 persistent_flags = PersistentFlags()

@@ -104,7 +104,7 @@ class TestLogzioSender(TestCase):
         # Make sure no file is present
         self.assertEqual(len(_find("logzio-failures-*.txt", ".")), 0)
 
-        time.sleep(self.retries_no*self.retry_timeout*2*2)  # All of the retries
+        time.sleep(self.retries_no * self.retry_timeout * 2 * 2)  # All of the retries
 
         failure_files = _find("logzio-failures-*.txt", ".")
         self.assertEqual(len(failure_files), 1)
@@ -122,7 +122,7 @@ class TestLogzioSender(TestCase):
         # Make sure no file is present
         self.assertEqual(len(_find("logzio-failures-*.txt", ".")), 0)
 
-        time.sleep(self.retries_no*self.retry_timeout)  # All of the retries
+        time.sleep(self.retries_no * self.retry_timeout)  # All of the retries
 
         # Make sure no file was created
         self.assertEqual(len(_find("logzio-failures-*.txt", ".")), 0)
