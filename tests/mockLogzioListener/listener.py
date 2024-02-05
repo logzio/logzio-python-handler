@@ -73,7 +73,7 @@ class MockLogzioListener:
         return len(self.logs_list)
 
     def clear_logs_buffer(self):
-        self.logs_list[:] = []
+        self.logs_list.clear()
 
     def set_server_error(self):
         self.persistent_flags.set_server_error()
