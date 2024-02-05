@@ -322,6 +322,9 @@ LOGGING = {
 
 ## Release Notes
 
+- 4.1.2
+    - Fix DeprecationWarning
+    - Adjusted tests to logging:3.12
 - 4.1.1
     - Fix flusher issues with serverless
 - 4.1.0

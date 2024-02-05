@@ -23,7 +23,7 @@ class TestLogzioSender(TestCase):
         self.logzio_listener = listener.MockLogzioListener()
         self.logzio_listener.clear_logs_buffer()
         self.logzio_listener.clear_server_error()
-        self.logs_drain_timeout = 1
+        self.logs_drain_timeout = 2
         self.retries_no = 4
         self.retry_timeout = 2
 
