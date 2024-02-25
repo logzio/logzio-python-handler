@@ -1,11 +1,10 @@
 # This class is responsible for handling all asynchronous Logz.io's
 # communication
-import sys
 import json
-
-from time import sleep
+import sys
 from datetime import datetime
 from threading import Thread, enumerate
+from time import sleep
 
 import requests
 

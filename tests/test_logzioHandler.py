@@ -1,11 +1,9 @@
+import logging
 import os
+import re
+import sys
 from unittest import TestCase
 
-import logging
-
-import sys
-
-import re
 from logzio.handler import LogzioHandler
 
 
@@ -46,6 +44,7 @@ class TestLogzioHandler(TestCase):
                 'message': 'this is a test: moo.',
                 'path_name': 'handler_test.py',
                 'severity': 'NOTSET',
+                'taskName': None,
                 'type': 'python'
             }
         )
@@ -74,6 +73,7 @@ class TestLogzioHandler(TestCase):
                 'logger': 'my-logger',
                 'message': 'this is a test: moo.',
                 'path_name': 'handler_test.py',
+                'taskName': None,
                 'type': 'python'
             }
         )
@@ -104,6 +104,7 @@ class TestLogzioHandler(TestCase):
                 'logger': 'my-logger',
                 'message': 'this is a test: moo.',
                 'path_name': 'handler_test.py',
+                'taskName': None,
                 'type': 'python',
                 'extra_key': 'extra_value'
             }
@@ -133,6 +134,7 @@ class TestLogzioHandler(TestCase):
                 'logger': 'my-logger',
                 'message': 'this is a test: moo.',
                 'path_name': 'handler_test.py',
+                'taskName': None,
                 'type': 'python'
             }
         )
@@ -140,7 +142,7 @@ class TestLogzioHandler(TestCase):
     def test_exception(self):
         formatter = logging.Formatter('{"tags": ["staging", "experimental"], "appname": "my-service"}', validate=False)
         self.handler.setFormatter(formatter)
-        
+
         try:
             raise ValueError("oops.")
         except:
@@ -173,6 +175,7 @@ class TestLogzioHandler(TestCase):
                 'message': 'exception test:',
                 'exception': 'Traceback (most recent call last):\n\n  File "", in test_exception\n    raise ValueError("oops.")\n\nValueError: oops.\n',
                 'path_name': 'handler_test.py',
+                'taskName': None,
                 'type': 'python',
                 'tags': ['staging', 'experimental']
             },

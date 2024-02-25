@@ -1,8 +1,8 @@
 import fnmatch
+import json
 import logging.config
 import os
 import time
-import json
 from unittest import TestCase
 
 from .mockLogzioListener import listener
