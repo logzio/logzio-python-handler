@@ -16,8 +16,8 @@ if sys.version[0] == '2':
 else:
     import queue as queue
 
-version = os.getenv('PACKAGE_VERSION', 'unknown')
-SHIPPER_HEADER = {"user-agent": f"logzio-python-version-{version}-logs"}
+PACKAGE_VERSION = os.getenv('PACKAGE_VERSION', 'unknown')
+SHIPPER_HEADER = {"user-agent": f"logzio-python-version-{PACKAGE_VERSION}-logs"}
 MAX_BULK_SIZE_IN_BYTES = 1 * 1024 * 1024  # 1 MB
 
 
