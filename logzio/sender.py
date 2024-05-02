@@ -1,6 +1,7 @@
 # This class is responsible for handling all asynchronous Logz.io's
 # communication
 import json
+import os
 import sys
 from datetime import datetime
 from threading import Thread, enumerate
@@ -15,6 +16,8 @@ if sys.version[0] == '2':
 else:
     import queue as queue
 
+version = os.getenv('PACKAGE_VERSION', 'unknown')
+SHIPPER_HEADER = {"user-agent": f"logzio-python-version-{version}-logs"}
 MAX_BULK_SIZE_IN_BYTES = 1 * 1024 * 1024  # 1 MB
 
 
@@ -108,7 +111,7 @@ class LogzioSender:
             self.number_of_retries = self.number_of_retries
 
             should_backup_to_disk = True
-            headers = {"Content-type": "text/plain"}
+            headers = {"Content-type": "text/plain", **SHIPPER_HEADER}
 
             for current_try in range(self.number_of_retries):
                 should_retry = False
