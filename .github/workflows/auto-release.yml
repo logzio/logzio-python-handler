@@ -31,3 +31,6 @@ jobs:
           TWINE_USERNAME: __token__
           TWINE_PASSWORD: ${{ secrets.PYPI_REPO_TOKEN }}
           PACKAGE_VERSION: ${{ env.PACKAGE_VERSION }}
+
+      - name: Output version
+        run: echo "The package version is ${{ env.PACKAGE_VERSION }}"
