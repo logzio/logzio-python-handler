@@ -1,7 +1,7 @@
 name: Pypi Release
 on:
   workflow_run:
-    workflows: [ "CI Tests" ]
+#    workflows: [ "CI Tests" ]
     branches: [ master ]
     types:
       - completed
