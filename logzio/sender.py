@@ -1,7 +1,7 @@
 # This class is responsible for handling all asynchronous Logz.io's
 # communication
 import json
-import os
+from importlib.metadata import version
 import sys
 from datetime import datetime
 from threading import Thread, enumerate
@@ -16,7 +16,7 @@ if sys.version[0] == '2':
 else:
     import queue as queue
 
-PACKAGE_VERSION = os.getenv('PACKAGE_VERSION', 'unknown')
+PACKAGE_VERSION = version("logzio-python-handler")
 SHIPPER_HEADER = {"user-agent": f"logzio-python-version-{PACKAGE_VERSION}-logs"}
 MAX_BULK_SIZE_IN_BYTES = 1 * 1024 * 1024  # 1 MB
 

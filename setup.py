@@ -4,7 +4,7 @@ from setuptools import find_packages, setup
 
 setup(
     name="logzio-python-handler",
-    version='4.1.2',
+    use_scm_version=True,
     description="Logging handler to send logs to your Logz.io account with bulk SSL",
     keywords="logging handler logz.io bulk https",
     author="roiravhon",
@@ -23,6 +23,7 @@ setup(
     test_requires=[
         "future"
     ],
+    setup_requires=['setuptools_scm'],
     include_package_data=True,
     classifiers=[
         'Development Status :: 5 - Production/Stable',
