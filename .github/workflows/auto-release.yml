@@ -36,7 +36,7 @@ jobs:
       - name: "Build and uploads to PyPI"
         run: |
           python3 setup.py sdist bdist_wheel
-          python3 -m twine upload dist/*
+          twine upload --repository-url https://test.pypi.org/legacy/ dist/*
         env:
           TWINE_USERNAME: __token__
-          TWINE_PASSWORD: ${{ secrets.PYPI_REPO_TOKEN }}
+          TWINE_PASSWORD: ${{ secrets.PYPI_TEST_TOKEN }}
