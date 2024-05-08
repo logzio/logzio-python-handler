@@ -1,4 +1,4 @@
-name: Release, Test, and Deploy
+name: PyPI Release, Test, and Deploy
 
 on:
   release:
@@ -11,15 +11,15 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
         with:
-          fetch-depth: 0  # Important: allows Git history and tags to be fully checked out
+          fetch-depth: 0
       - name: Set up Python
         uses: actions/setup-python@v3.0.0
         with:
           python-version: '3.x'
-#      - name: Install tox
-#        run: pip install tox
-#      - name: Run tox
-#        run: python -m tox
+      - name: Install tox
+        run: pip install tox
+      - name: Run tox
+        run: python -m tox
 
   build-and-release:
     needs: ci-tests
@@ -27,7 +27,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
         with:
-          fetch-depth: 0  # Ensure tags are available for version calculation
+          fetch-depth: 0
       - uses: actions/setup-python@v3.0.0
         with:
           python-version: '3.x'
@@ -36,7 +36,7 @@ jobs:
       - name: "Build and uploads to PyPI"
         run: |
           python3 setup.py sdist bdist_wheel
-          twine upload --repository-url https://test.pypi.org/legacy/ dist/*
+          python3 -m twine upload dist/*
         env:
           TWINE_USERNAME: __token__
-          TWINE_PASSWORD: ${{ secrets.PYPI_TEST_TOKEN }}
+          TWINE_PASSWORD: ${{ secrets.PYPI_REPO_TOKEN }}

@@ -1,9 +1,9 @@
 # This class is responsible for handling all asynchronous Logz.io's
 # communication
 import json
-from importlib.metadata import version
 import sys
 from datetime import datetime
+from importlib.metadata import version
 from threading import Thread, enumerate
 from time import sleep
 
@@ -15,9 +15,9 @@ if sys.version[0] == '2':
     import Queue as queue
 else:
     import queue as queue
-
-PACKAGE_VERSION = version("logzio-python-handler")
-SHIPPER_HEADER = {"user-agent": f"logzio-python-version-{PACKAGE_VERSION}-logs"}
+PACKAGE_NAME = "logzio-python-handler"
+PACKAGE_VERSION = version(PACKAGE_NAME)
+SHIPPER_HEADER = {"user-agent": f"{PACKAGE_NAME}-version-{PACKAGE_VERSION}-logs"}
 MAX_BULK_SIZE_IN_BYTES = 1 * 1024 * 1024  # 1 MB
 
 
