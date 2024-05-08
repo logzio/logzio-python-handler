@@ -2,3 +2,7 @@ requests>=2.27.0
 protobuf>=3.20.2
 setuptools>=68.0.0  # not directly required, pinned to avoid a vulnerability
 future>=0.18.3  # used in tests
+tox>=4.15.0
+wheel
+twine>=5.0.0
+setuptools_scm
