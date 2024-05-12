@@ -3,6 +3,7 @@
 import json
 import sys
 from datetime import datetime
+from importlib.metadata import version
 from threading import Thread, enumerate
 from time import sleep
 
@@ -14,7 +15,9 @@ if sys.version[0] == '2':
     import Queue as queue
 else:
     import queue as queue
-
+PACKAGE_NAME = "logzio-python-handler"
+PACKAGE_VERSION = version(PACKAGE_NAME)
+SHIPPER_HEADER = {"user-agent": f"{PACKAGE_NAME}-version-{PACKAGE_VERSION}-logs"}
 MAX_BULK_SIZE_IN_BYTES = 1 * 1024 * 1024  # 1 MB
 
 
@@ -108,7 +111,7 @@ class LogzioSender:
             self.number_of_retries = self.number_of_retries
 
             should_backup_to_disk = True
-            headers = {"Content-type": "text/plain"}
+            headers = {"Content-type": "text/plain", **SHIPPER_HEADER}
 
             for current_try in range(self.number_of_retries):
                 should_retry = False

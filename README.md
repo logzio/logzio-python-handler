@@ -322,6 +322,10 @@ LOGGING = {
 
 ## Release Notes
 
+- 4.1.3
+    - Enhanced LogzioSender to dynamically set the user-agent header using the package version.
+    - Adjusted GitHub Actions to trigger on new releases.
+    - Streamlined versioning in deployments by automating Git tag extraction for PACKAGE_VERSION.
 - 4.1.2
     - Fix DeprecationWarning
     - Adjusted tests to logging:3.12
