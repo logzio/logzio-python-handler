@@ -322,6 +322,8 @@ LOGGING = {
 
 ## Release Notes
 
+- 4.1.4
+    - Upgrade trace context opentelemetry-instrumentation-logging package version from v0.39b0 to v4.50b0
 - 4.1.3
     - Enhanced LogzioSender to dynamically set the user-agent header using the package version.
     - Adjusted GitHub Actions to trigger on new releases.
