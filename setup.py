@@ -18,7 +18,7 @@ setup(
         "protobuf>=3.20.2"
     ],
     extras_require={
-        "opentelemetry-logging": ["opentelemetry-instrumentation-logging==0.45b0"]
+        "opentelemetry-logging": ["opentelemetry-instrumentation-logging==0.49b1"]
     },
     test_requires=[
         "future"
