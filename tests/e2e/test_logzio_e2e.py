@@ -12,6 +12,7 @@ Required Environment Variables:
 import json
 import logging
 import os
+import re
 import time
 import requests
 import pytest
@@ -136,17 +137,28 @@ class TestLogzioLogs:
         print("Waiting for log ingestion...")
         time.sleep(240)
 
-        query = f"env_id:{self.env_id} AND message:*Content*validation*"
+        query = f"env_id:{self.env_id}"
         response = fetch_logs(self.api_key, query)
 
-        total = response.get("hits", {}).get("total", 0)
-        if total == 0:
-            pytest.fail("Test log not found")
+        hits = response.get("hits", {}).get("hits", [])
+        if not hits:
+            pytest.fail("No logs found for env_id")
 
-        hit = response["hits"]["hits"][0]["_source"]
-        assert "Content validation test" in hit.get("message", ""), "Message content mismatch"
-        assert hit.get("env_id") == self.env_id, "env_id mismatch"
-        assert hit.get("test_source") == "python-handler-e2e", "test_source mismatch"
+        # Find the log with matching message using regex
+        pattern = re.compile(r"Content\s+validation\s+test")
+        matching_log = None
+        for hit in hits:
+            source = hit.get("_source", {})
+            message = source.get("message", "")
+            if pattern.search(message):
+                matching_log = source
+                break
+
+        if not matching_log:
+            pytest.fail("Test log with 'Content validation test' not found in message field")
+
+        assert matching_log.get("env_id") == self.env_id, "env_id mismatch"
+        assert matching_log.get("test_source") == "python-handler-e2e", "test_source mismatch"
 
         print("✅ Log content matches expected values")
 
