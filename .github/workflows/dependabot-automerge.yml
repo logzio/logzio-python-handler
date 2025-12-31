@@ -42,9 +42,10 @@ jobs:
           steps.metadata.outputs.update-type == 'version-update:semver-minor'
         run: |
           echo "Enabling auto-merge for ${{ steps.metadata.outputs.dependency-names }} (${{ steps.metadata.outputs.update-type }})"
-          gh pr merge --auto --merge "${{ github.event.workflow_run.head_branch }}"
+          gh pr merge --auto --merge "$HEAD_BRANCH"
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          HEAD_BRANCH: ${{ github.event.workflow_run.head_branch }}
 
       - name: Skip major updates
         if: steps.metadata.outputs.update-type == 'version-update:semver-major'
