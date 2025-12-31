@@ -52,9 +52,6 @@ jobs:
     name: E2E Integration Test
     runs-on: ubuntu-latest
     needs: [test]
-    if: |
-      github.event_name == 'push' ||
-      (github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository)
 
     steps:
       - name: Checkout code
@@ -84,7 +81,7 @@ jobs:
       - name: Run E2E integration test
         env:
           LOGZIO_TOKEN: ${{ secrets.LOGZIO_TOKEN }}
-          LOGZIO_LOGS_API_KEY: ${{ secrets.LOGZIO_LOGS_API_KEY }}
+          LOGZIO_API_KEY: ${{ secrets.LOGZIO_API_KEY }}
           LOGZIO_API_URL: ${{ secrets.LOGZIO_API_URL }}
           ENV_ID: ${{ steps.env-id.outputs.value }}
         run: |
@@ -102,7 +99,7 @@ jobs:
             echo "Test job failed"
             exit 1
           fi
-          if [[ "${{ needs.e2e-integration.result }}" != "success" && "${{ needs.e2e-integration.result }}" != "skipped" ]]; then
+          if [[ "${{ needs.e2e-integration.result }}" != "success" ]]; then
             echo "E2E integration job failed"
             exit 1
           fi

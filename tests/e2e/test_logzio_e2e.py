@@ -5,7 +5,7 @@ Sends logs using the handler and validates they arrive via Logz.io API.
 
 Required Environment Variables:
     LOGZIO_TOKEN: Shipping token for sending logs
-    LOGZIO_LOGS_API_KEY: API token for querying logs
+    LOGZIO_API_KEY: API token for querying logs
     ENV_ID: Unique identifier for this test run
 """
 
@@ -18,7 +18,6 @@ import pytest
 
 from logzio.handler import LogzioHandler
 
-# Logz.io API URL
 BASE_LOGZIO_API_URL = os.getenv("LOGZIO_API_URL", "https://api.logz.io/v1")
 
 
@@ -86,9 +85,8 @@ def send_test_log(token: str, env_id: str, message: str):
 
     logger.info(message, extra={"env_id": env_id, "test_source": "python-handler-e2e"})
 
-    # Flush to ensure log is sent
     handler.flush()
-    time.sleep(3)  # Wait for log to be processed
+    time.sleep(3) 
 
 
 class TestLogzioLogs:
@@ -98,20 +96,17 @@ class TestLogzioLogs:
     def setup(self):
         """Set up test fixtures."""
         self.token = get_env_or_skip("LOGZIO_TOKEN")
-        self.api_key = get_env_or_skip("LOGZIO_LOGS_API_KEY")
+        self.api_key = get_env_or_skip("LOGZIO_API_KEY")
         self.env_id = get_env_or_skip("ENV_ID")
 
     def test_logs_received(self):
         """Test that logs are received and have required fields."""
-        # Send a test log
         test_message = f"E2E test message from python handler - {self.env_id}"
         send_test_log(self.token, self.env_id, test_message)
 
-        # Wait for ingestion
         print("Waiting for log ingestion...")
-        time.sleep(30)
+        time.sleep(180)
 
-        # Query logs
         query = f"env_id:{self.env_id} AND type:{self.env_id}"
         response = fetch_logs(self.api_key, query)
 
@@ -123,7 +118,6 @@ class TestLogzioLogs:
         for hit in hits:
             source = hit.get("_source", {})
 
-            # Verify required fields are present
             required_fields = ["message", "logger", "log_level", "type", "@timestamp"]
             missing_fields = [f for f in required_fields if not source.get(f)]
 
@@ -139,11 +133,9 @@ class TestLogzioLogs:
         test_message = f"Content validation test - {self.env_id}"
         send_test_log(self.token, self.env_id, test_message)
 
-        # Wait for ingestion
         print("Waiting for log ingestion...")
         time.sleep(30)
 
-        # Query for specific message
         query = f"env_id:{self.env_id} AND message:*Content*validation*"
         response = fetch_logs(self.api_key, query)
 
@@ -151,7 +143,6 @@ class TestLogzioLogs:
         if total == 0:
             pytest.fail("Test log not found")
 
-        # Verify the message content
         hit = response["hits"]["hits"][0]["_source"]
         assert "Content validation test" in hit.get("message", ""), "Message content mismatch"
         assert hit.get("env_id") == self.env_id, "env_id mismatch"
