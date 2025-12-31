@@ -40,7 +40,7 @@ pip install logzio-python-handler[opentelemetry-logging]
 
 ## Tested Python Versions
 
-Travis CI will build this handler and test against:
+CI will build this handler and test against:
 
 - "3.5"
 - "3.6"
@@ -49,6 +49,9 @@ Travis CI will build this handler and test against:
 - "3.9"
 - "3.10"
 - "3.11"
+- "3.12"
+- "3.13"
+- "3.14"
 
 We can't ensure compatibility to any other version, as we can't test it automatically.
 
