@@ -13,7 +13,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: ["3.9", "3.10", "3.11", "3.12"]
+        python-version: ["3.9", "3.10", "3.11", "3.12", "3.13", "3.14"]
 
     steps:
       - name: Checkout code
@@ -82,7 +82,6 @@ jobs:
         env:
           LOGZIO_TOKEN: ${{ secrets.LOGZIO_TOKEN }}
           LOGZIO_API_KEY: ${{ secrets.LOGZIO_API_KEY }}
-          LOGZIO_API_URL: ${{ secrets.LOGZIO_API_URL }}
           ENV_ID: ${{ steps.env-id.outputs.value }}
         run: |
           pytest tests/e2e/test_logzio_e2e.py -v --tb=long
