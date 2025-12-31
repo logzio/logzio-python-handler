@@ -11,6 +11,11 @@ class TestLogzioHandler(TestCase):
     def setUp(self):
         self.handler = LogzioHandler('moo')
 
+    def _remove_version_specific_fields(self, message):
+        """Remove fields that vary by Python version (e.g., taskName added in 3.12)."""
+        message.pop('taskName', None)
+        return message
+
     def test_json(self):
         formatter = logging.Formatter(
             '{ "appname":"%(name)s", "functionName":"%(funcName)s", \"lineNo":"%(lineno)d", "severity":"%('
@@ -30,6 +35,7 @@ class TestLogzioHandler(TestCase):
 
         formatted_message = self.handler.format_message(record)
         formatted_message["@timestamp"] = None
+        self._remove_version_specific_fields(formatted_message)
 
         self.assertDictEqual(
             formatted_message,
@@ -44,7 +50,6 @@ class TestLogzioHandler(TestCase):
                 'message': 'this is a test: moo.',
                 'path_name': 'handler_test.py',
                 'severity': 'NOTSET',
-                'taskName': None,
                 'type': 'python'
             }
         )
@@ -63,6 +68,7 @@ class TestLogzioHandler(TestCase):
 
         formatted_message = self.handler.format_message(record)
         formatted_message["@timestamp"] = None
+        self._remove_version_specific_fields(formatted_message)
 
         self.assertDictEqual(
             formatted_message,
@@ -73,7 +79,6 @@ class TestLogzioHandler(TestCase):
                 'logger': 'my-logger',
                 'message': 'this is a test: moo.',
                 'path_name': 'handler_test.py',
-                'taskName': None,
                 'type': 'python'
             }
         )
@@ -94,6 +99,7 @@ class TestLogzioHandler(TestCase):
         record.__dict__["module"] = "testing"
         formatted_message = self.handler.format_message(record)
         formatted_message["@timestamp"] = None
+        self._remove_version_specific_fields(formatted_message)
 
         self.assertDictEqual(
             formatted_message,
@@ -104,7 +110,6 @@ class TestLogzioHandler(TestCase):
                 'logger': 'my-logger',
                 'message': 'this is a test: moo.',
                 'path_name': 'handler_test.py',
-                'taskName': None,
                 'type': 'python',
                 'extra_key': 'extra_value'
             }
@@ -124,6 +129,7 @@ class TestLogzioHandler(TestCase):
 
         formatted_message = self.handler.format_message(record)
         formatted_message["@timestamp"] = None
+        self._remove_version_specific_fields(formatted_message)
 
         self.assertDictEqual(
             formatted_message,
@@ -134,7 +140,6 @@ class TestLogzioHandler(TestCase):
                 'logger': 'my-logger',
                 'message': 'this is a test: moo.',
                 'path_name': 'handler_test.py',
-                'taskName': None,
                 'type': 'python'
             }
         )
@@ -161,6 +166,7 @@ class TestLogzioHandler(TestCase):
 
         formatted_message = self.handler.format_message(record)
         formatted_message["@timestamp"] = None
+        self._remove_version_specific_fields(formatted_message)
 
         formatted_message["exception"] = formatted_message["exception"].replace(os.path.abspath(__file__), "")
         formatted_message["exception"] = re.sub(r", line \d+", "", formatted_message["exception"])
@@ -175,7 +181,6 @@ class TestLogzioHandler(TestCase):
                 'message': 'exception test:',
                 'exception': 'Traceback (most recent call last):\n\n  File "", in test_exception\n    raise ValueError("oops.")\n\nValueError: oops.\n',
                 'path_name': 'handler_test.py',
-                'taskName': None,
                 'type': 'python',
                 'tags': ['staging', 'experimental']
             },
