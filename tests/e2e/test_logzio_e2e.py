@@ -134,7 +134,7 @@ class TestLogzioLogs:
         send_test_log(self.token, self.env_id, test_message)
 
         print("Waiting for log ingestion...")
-        time.sleep(30)
+        time.sleep(180)
 
         query = f"env_id:{self.env_id} AND message:*Content*validation*"
         response = fetch_logs(self.api_key, query)
