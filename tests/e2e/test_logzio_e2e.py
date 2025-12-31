@@ -106,7 +106,7 @@ class TestLogzioLogs:
         send_test_log(self.token, self.env_id, test_message)
 
         print("Waiting for log ingestion...")
-        time.sleep(240)
+        time.sleep(180)
 
         query = f"env_id:{self.env_id} AND type:{self.env_id}"
         response = fetch_logs(self.api_key, query)
@@ -135,7 +135,7 @@ class TestLogzioLogs:
         send_test_log(self.token, self.env_id, test_message)
 
         print("Waiting for log ingestion...")
-        time.sleep(240)
+        time.sleep(180)
 
         query = f"env_id:{self.env_id}"
         response = fetch_logs(self.api_key, query)
