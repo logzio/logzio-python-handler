@@ -48,20 +48,35 @@ jobs:
 
       - name: Send Slack notification (Success)
         if: steps.pr-info.outputs.found == 'true'
-        uses: rtCamp/action-slack-notify@v2
+        run: |
+          curl -X POST -H 'Content-type: application/json' --data '{
+            "attachments": [{
+              "color": "#36a64f",
+              "blocks": [
+                {
+                  "type": "header",
+                  "text": {"type": "plain_text", "text": "✅ Dependabot Update - CI Passed", "emoji": true}
+                },
+                {
+                  "type": "section",
+                  "fields": [
+                    {"type": "mrkdwn", "text": "*Repository:*\n${{ github.repository }}"},
+                    {"type": "mrkdwn", "text": "*PR:*\n<${{ steps.pr-info.outputs.pr_url }}|#${{ steps.pr-info.outputs.pr_number }}>"}
+                  ]
+                },
+                {
+                  "type": "section",
+                  "text": {"type": "mrkdwn", "text": "${{ steps.pr-info.outputs.pr_title }}"}
+                },
+                {
+                  "type": "context",
+                  "elements": [{"type": "mrkdwn", "text": "Auto-merge enabled • logzio-python-handler CI"}]
+                }
+              ]
+            }]
+          }' "$SLACK_WEBHOOK"
         env:
           SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
-          SLACK_COLOR: "#36a64f"
-          SLACK_USERNAME: "Dependabot"
-          SLACK_ICON: "https://avatars.githubusercontent.com/in/29110?s=64&v=4"
-          SLACK_TITLE: "✅ Dependabot Update - CI Passed"
-          SLACK_MESSAGE: |
-            *Repository:* ${{ github.repository }}
-            *PR:* <${{ steps.pr-info.outputs.pr_url }}|#${{ steps.pr-info.outputs.pr_number }}> ${{ steps.pr-info.outputs.pr_title }}
-            *Status:* All CI checks passed! Auto-merge has been enabled.
-            
-            The PR will be automatically merged once all branch protection requirements are satisfied.
-          SLACK_FOOTER: "logzio-python-handler CI"
 
 
   notify-failure:
@@ -101,20 +116,35 @@ jobs:
 
       - name: Send Slack notification (Failure)
         if: steps.pr-info.outputs.found == 'true'
-        uses: rtCamp/action-slack-notify@v2
+        run: |
+          curl -X POST -H 'Content-type: application/json' --data '{
+            "attachments": [{
+              "color": "#ff0000",
+              "blocks": [
+                {
+                  "type": "header",
+                  "text": {"type": "plain_text", "text": "🚨 Dependabot Update - CI Failed", "emoji": true}
+                },
+                {
+                  "type": "section",
+                  "fields": [
+                    {"type": "mrkdwn", "text": "*Repository:*\n${{ github.repository }}"},
+                    {"type": "mrkdwn", "text": "*PR:*\n<${{ steps.pr-info.outputs.pr_url }}|#${{ steps.pr-info.outputs.pr_number }}>"}
+                  ]
+                },
+                {
+                  "type": "section",
+                  "text": {"type": "mrkdwn", "text": "${{ steps.pr-info.outputs.pr_title }}\n\n<${{ steps.run-url.outputs.url }}|View CI Run> to investigate"}
+                },
+                {
+                  "type": "context",
+                  "elements": [{"type": "mrkdwn", "text": "Manual intervention required • logzio-python-handler CI"}]
+                }
+              ]
+            }]
+          }' "$SLACK_WEBHOOK"
         env:
           SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
-          SLACK_COLOR: "#ff0000"
-          SLACK_USERNAME: "Dependabot"
-          SLACK_ICON: "https://avatars.githubusercontent.com/in/29110?s=64&v=4"
-          SLACK_TITLE: "🚨 Dependabot Update - CI Failed"
-          SLACK_MESSAGE: |
-            *Repository:* ${{ github.repository }}
-            *PR:* <${{ steps.pr-info.outputs.pr_url }}|#${{ steps.pr-info.outputs.pr_number }}> ${{ steps.pr-info.outputs.pr_title }}
-            *Status:* CI checks failed - manual intervention required!
-            
-            <${{ steps.run-url.outputs.url }}|View CI Run> to investigate the failure.
-          SLACK_FOOTER: "logzio-python-handler CI"
 
   notify-merged:
     name: Notify Merged
@@ -126,17 +156,29 @@ jobs:
 
     steps:
       - name: Send Slack notification (Merged)
-        uses: rtCamp/action-slack-notify@v2
+        run: |
+          curl -X POST -H 'Content-type: application/json' --data '{
+            "attachments": [{
+              "color": "#2eb886",
+              "blocks": [
+                {
+                  "type": "header",
+                  "text": {"type": "plain_text", "text": "🎉 Dependencies Updated Successfully", "emoji": true}
+                },
+                {
+                  "type": "section",
+                  "fields": [
+                    {"type": "mrkdwn", "text": "*Repository:*\n${{ github.repository }}"},
+                    {"type": "mrkdwn", "text": "*Commit:*\n<${{ github.server_url }}/${{ github.repository }}/commit/${{ github.event.workflow_run.head_sha }}|${{ github.event.workflow_run.head_sha }}>"}
+                  ]
+                },
+                {
+                  "type": "context",
+                  "elements": [{"type": "mrkdwn", "text": "Merged to main • logzio-python-handler CI"}]
+                }
+              ]
+            }]
+          }' "$SLACK_WEBHOOK"
         env:
           SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
-          SLACK_COLOR: "#2eb886"
-          SLACK_USERNAME: "Dependabot"
-          SLACK_ICON: "https://avatars.githubusercontent.com/in/29110?s=64&v=4"
-          SLACK_TITLE: "🎉 Dependencies Updated Successfully"
-          SLACK_MESSAGE: |
-            *Repository:* ${{ github.repository }}
-            *Commit:* <${{ github.server_url }}/${{ github.repository }}/commit/${{ github.event.workflow_run.head_sha }}|${{ github.event.workflow_run.head_sha }}>
-            
-            Dependabot updates have been merged and CI passed on main branch.
-          SLACK_FOOTER: "logzio-python-handler CI"
 
