@@ -9,6 +9,7 @@ Required Environment Variables:
     ENV_ID: Unique identifier for this test run
 """
 
+import atexit
 import json
 import logging
 import os
@@ -20,6 +21,21 @@ import pytest
 from logzio.handler import LogzioHandler
 
 BASE_LOGZIO_API_URL = os.getenv("LOGZIO_API_URL", "https://api.logz.io/v1")
+
+# Track handlers to close them properly at exit
+_handlers_to_close = []
+
+
+def _cleanup_handlers():
+    """Close all handlers at exit to prevent logging errors."""
+    for handler in _handlers_to_close:
+        try:
+            handler.close()
+        except Exception:
+            pass
+
+
+atexit.register(_cleanup_handlers)
 
 
 def get_env_or_fail(var_name: str) -> str:
@@ -78,6 +94,7 @@ def send_test_log(token: str, env_id: str, message: str):
         debug=True,
         backup_logs=False
     )
+    _handlers_to_close.append(handler)
 
     logger = logging.getLogger(f"e2e-test-{env_id}")
     logger.setLevel(logging.INFO)
@@ -87,7 +104,7 @@ def send_test_log(token: str, env_id: str, message: str):
     logger.info(message, extra={"env_id": env_id, "test_source": "python-handler-e2e"})
 
     handler.flush()
-    time.sleep(3) 
+    time.sleep(3)
 
 
 class TestLogzioLogs:
@@ -106,7 +123,7 @@ class TestLogzioLogs:
         send_test_log(self.token, self.env_id, test_message)
 
         print("Waiting for log ingestion...")
-        time.sleep(180)
+        time.sleep(240)
 
         query = f"env_id:{self.env_id} AND type:{self.env_id}"
         response = fetch_logs(self.api_key, query)
@@ -135,7 +152,7 @@ class TestLogzioLogs:
         send_test_log(self.token, self.env_id, test_message)
 
         print("Waiting for log ingestion...")
-        time.sleep(180)
+        time.sleep(240)
 
         query = f"env_id:{self.env_id}"
         response = fetch_logs(self.api_key, query)
@@ -155,6 +172,9 @@ class TestLogzioLogs:
                 break
 
         if not matching_log:
+            print("Available logs:")
+            for hit in hits[:5]:
+                print(f"  - {hit.get('_source', {}).get('message', 'N/A')}")
             pytest.fail("Test log with 'Content validation test' not found in message field")
 
         assert matching_log.get("env_id") == self.env_id, "env_id mismatch"
