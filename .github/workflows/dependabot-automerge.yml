@@ -71,9 +71,7 @@ jobs:
         if: steps.pr.outputs.found == 'true' && steps.pr.outputs.is_major != 'true'
         run: |
           echo "Processing PR #${{ steps.pr.outputs.number }}"
-              
-          gh pr review ${{ steps.pr.outputs.number }} --approve --repo ${{ github.repository }}
-          
+                        
           gh pr merge ${{ steps.pr.outputs.number }} --auto --merge --repo ${{ github.repository }}
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
