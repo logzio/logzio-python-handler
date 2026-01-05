@@ -70,9 +70,11 @@ jobs:
       - name: merge patch/minor updates
         if: steps.pr.outputs.found == 'true' && steps.pr.outputs.is_major != 'true'
         run: |
-          echo "Enabling merge for PR #${{ steps.pr.outputs.number }}"
-          echo "Title: ${{ steps.pr.outputs.title }}"
-          gh pr merge --merge ${{ steps.pr.outputs.number }} --repo ${{ github.repository }}
+          echo "Processing PR #${{ steps.pr.outputs.number }}"
+              
+          gh pr review ${{ steps.pr.outputs.number }} --approve --repo ${{ github.repository }}
+          
+          gh pr merge ${{ steps.pr.outputs.number }} --auto --merge --repo ${{ github.repository }}
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
