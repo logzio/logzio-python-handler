@@ -22,11 +22,11 @@ from logzio.handler import LogzioHandler
 BASE_LOGZIO_API_URL = os.getenv("LOGZIO_API_URL", "https://api.logz.io/v1")
 
 
-def get_env_or_skip(var_name: str) -> str:
-    """Get environment variable or skip test if not set."""
+def get_env_or_fail(var_name: str) -> str:
+    """Get environment variable or fail test if not set."""
     value = os.environ.get(var_name)
     if not value:
-        pytest.skip(f"Environment variable {var_name} is not set")
+        pytest.fail(f"Required environment variable {var_name} is not set. Configure GitHub secret.")
     return value
 
 
@@ -96,9 +96,9 @@ class TestLogzioLogs:
     @pytest.fixture(autouse=True)
     def setup(self):
         """Set up test fixtures."""
-        self.token = get_env_or_skip("LOGZIO_TOKEN")
-        self.api_key = get_env_or_skip("LOGZIO_API_KEY")
-        self.env_id = get_env_or_skip("ENV_ID")
+        self.token = get_env_or_fail("LOGZIO_TOKEN")
+        self.api_key = get_env_or_fail("LOGZIO_API_KEY")
+        self.env_id = get_env_or_fail("ENV_ID")
 
     def test_logs_received(self):
         """Test that logs are received and have required fields."""

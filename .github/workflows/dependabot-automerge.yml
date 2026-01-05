@@ -27,27 +27,57 @@ jobs:
       github.event.workflow_run.event == 'pull_request'
 
     steps:
-      - name: Checkout for metadata
-        uses: actions/checkout@v4
-
-      - name: Fetch Dependabot metadata
-        id: metadata
-        uses: dependabot/fetch-metadata@v2
+      - name: Get PR number
+        id: pr
+        uses: actions/github-script@v7
         with:
-          github-token: "${{ secrets.GITHUB_TOKEN }}"
+          script: |
+            const { data: pullRequests } = await github.rest.pulls.list({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open',
+              head: `${context.repo.owner}:${context.payload.workflow_run.head_branch}`
+            });
+            
+            if (pullRequests.length > 0) {
+              const pr = pullRequests[0];
+              core.setOutput('number', pr.number);
+              core.setOutput('title', pr.title);
+              core.setOutput('found', 'true');
+              
+              // Check if it's a major update by looking at the PR title
+              // Dependabot titles include version info like "from 1.0.0 to 2.0.0"
+              const majorPattern = /from \d+\.\d+\.\d+ to (\d+)\./;
+              const match = pr.title.match(majorPattern);
+              if (match) {
+                const fromMajor = pr.title.match(/from (\d+)\./);
+                const toMajor = match[1];
+                if (fromMajor && fromMajor[1] !== toMajor) {
+                  core.setOutput('is_major', 'true');
+                } else {
+                  core.setOutput('is_major', 'false');
+                }
+              } else {
+                core.setOutput('is_major', 'false');
+              }
+              
+              console.log(`Found PR #${pr.number}: ${pr.title}`);
+            } else {
+              core.setOutput('found', 'false');
+              console.log('No matching PR found');
+            }
 
       - name: Auto-merge patch/minor updates
-        if: |
-          steps.metadata.outputs.update-type == 'version-update:semver-patch' ||
-          steps.metadata.outputs.update-type == 'version-update:semver-minor'
+        if: steps.pr.outputs.found == 'true' && steps.pr.outputs.is_major != 'true'
         run: |
-          echo "Enabling auto-merge for ${{ steps.metadata.outputs.dependency-names }} (${{ steps.metadata.outputs.update-type }})"
-          gh pr merge --auto --merge "$HEAD_BRANCH"
+          echo "Enabling auto-merge for PR #${{ steps.pr.outputs.number }}"
+          echo "Title: ${{ steps.pr.outputs.title }}"
+          gh pr merge --auto --merge ${{ steps.pr.outputs.number }} --repo ${{ github.repository }}
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          HEAD_BRANCH: ${{ github.event.workflow_run.head_branch }}
 
       - name: Skip major updates
-        if: steps.metadata.outputs.update-type == 'version-update:semver-major'
+        if: steps.pr.outputs.found == 'true' && steps.pr.outputs.is_major == 'true'
         run: |
-          echo "Major version update for ${{ steps.metadata.outputs.dependency-names }} - review required"
+          echo "⚠️ Major version update detected - manual review required"
+          echo "PR #${{ steps.pr.outputs.number }}: ${{ steps.pr.outputs.title }}"
