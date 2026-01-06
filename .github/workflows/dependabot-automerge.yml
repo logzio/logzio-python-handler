@@ -136,14 +136,14 @@ jobs:
         env:
           SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
 
-      - name: Enable auto-merge
+      - name: Squash merge PR
         id: merge
         if: |
           github.event.workflow_run.conclusion == 'success' &&
           steps.pr.outputs.found == 'true' &&
           steps.pr.outputs.is_major != 'true'
         run: |
-          echo "Enabling auto-merge for PR #${{ steps.pr.outputs.number }}"
+          echo "Squash merging PR #${{ steps.pr.outputs.number }}"
           if gh pr merge ${{ steps.pr.outputs.number }} --squash --repo ${{ github.repository }}; then
             echo "result=success" >> $GITHUB_OUTPUT
           else
@@ -152,7 +152,7 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Notify Slack - Auto-merge Enabled
+      - name: Notify Slack - Squash Merged
         if: |
           github.event.workflow_run.conclusion == 'success' &&
           steps.pr.outputs.found == 'true' &&
@@ -165,7 +165,7 @@ jobs:
               "blocks": [
                 {
                   "type": "header",
-                  "text": {"type": "plain_text", "text": "✅ Dependabot Update - Auto-merge Enabled", "emoji": true}
+                  "text": {"type": "plain_text", "text": "✅ Dependabot Update - Squash Merged", "emoji": true}
                 },
                 {
                   "type": "section",
@@ -180,7 +180,7 @@ jobs:
                 },
                 {
                   "type": "context",
-                  "elements": [{"type": "mrkdwn", "text": "Will merge automatically when all checks pass"}]
+                  "elements": [{"type": "mrkdwn", "text": "Squash merged to main"}]
                 }
               ]
             }]
@@ -188,7 +188,7 @@ jobs:
         env:
           SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
 
-      - name: Notify Slack - Auto-merge Failed
+      - name: Notify Slack - Merge Failed
         if: |
           github.event.workflow_run.conclusion == 'success' &&
           steps.pr.outputs.found == 'true' &&
@@ -201,7 +201,7 @@ jobs:
               "blocks": [
                 {
                   "type": "header",
-                  "text": {"type": "plain_text", "text": "🚨 Auto-merge Failed", "emoji": true}
+                  "text": {"type": "plain_text", "text": "🚨 Merge Failed", "emoji": true}
                 },
                 {
                   "type": "section",
@@ -212,7 +212,7 @@ jobs:
                 },
                 {
                   "type": "section",
-                  "text": {"type": "mrkdwn", "text": "${{ steps.pr.outputs.title }}\n\nCould not enable auto-merge. Manual intervention required."}
+                  "text": {"type": "mrkdwn", "text": "${{ steps.pr.outputs.title }}\n\nCould not merge PR. Manual intervention required."}
                 }
               ]
             }]
