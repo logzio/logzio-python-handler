@@ -1,4 +1,4 @@
-requests>=2.27.0
+requests==2.32.4
 protobuf>=3.20.2
 setuptools>=68.0.0  # not directly required, pinned to avoid a vulnerability
 future>=0.18.3  # used in tests
