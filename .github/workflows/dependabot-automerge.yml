@@ -144,7 +144,7 @@ jobs:
           steps.pr.outputs.is_major != 'true'
         run: |
           echo "Enabling auto-merge for PR #${{ steps.pr.outputs.number }}"
-          if gh pr merge ${{ steps.pr.outputs.number }} --auto --merge --repo ${{ github.repository }}; then
+          if gh pr merge ${{ steps.pr.outputs.number }} --squash --repo ${{ github.repository }}; then
             echo "result=success" >> $GITHUB_OUTPUT
           else
             echo "result=failed" >> $GITHUB_OUTPUT
