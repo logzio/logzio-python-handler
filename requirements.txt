@@ -3,6 +3,6 @@ protobuf>=3.20.2
 setuptools>=68.0.0  # not directly required, pinned to avoid a vulnerability
 future>=0.18.3  # used in tests
 tox>=4.15.0
-wheel
+wheel==0.46.2
 twine>=5.0.0
 setuptools_scm
