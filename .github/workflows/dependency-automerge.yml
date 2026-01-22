@@ -1,0 +1,192 @@
+name: Dependency Auto-Merge
+
+# This workflow runs AFTER CI completes for Dependabot and Cycode PRs.
+# It handles squash merge AND notifications in sequence.
+
+on:
+  workflow_run:
+    workflows: ["CI"]
+    types:
+      - completed
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  process-dependency-update:
+    name: Process Dependency Update PR
+    runs-on: ubuntu-latest
+    if: |
+      (github.event.workflow_run.actor.login == 'dependabot[bot]' ||
+       github.event.workflow_run.actor.login == 'cycode-bot') &&
+      github.event.workflow_run.event == 'pull_request'
+
+    steps:
+      - name: Get PR information
+        id: pr
+        uses: actions/github-script@v8
+        with:
+          script: |
+            const { data: pullRequests } = await github.rest.pulls.list({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open',
+              head: `${context.repo.owner}:${context.payload.workflow_run.head_branch}`
+            });
+            
+            if (pullRequests.length > 0) {
+              const pr = pullRequests[0];
+              core.setOutput('number', pr.number);
+              core.setOutput('title', pr.title);
+              core.setOutput('url', pr.html_url);
+              core.setOutput('found', 'true');
+              core.setOutput('author', pr.user.login);
+              
+              // Check if major update from PR title
+              const majorPattern = /from \d+\.\d+\.\d+ to (\d+)\./;
+              const match = pr.title.match(majorPattern);
+              if (match) {
+                const fromMajor = pr.title.match(/from (\d+)\./);
+                const toMajor = match[1];
+                core.setOutput('is_major', fromMajor && fromMajor[1] !== toMajor ? 'true' : 'false');
+              } else {
+                core.setOutput('is_major', 'false');
+              }
+              
+              console.log(`Found PR #${pr.number}: ${pr.title}`);
+            } else {
+              core.setOutput('found', 'false');
+              console.log('No matching PR found');
+            }
+
+      - name: Notify Slack - CI Failed
+        if: |
+          github.event.workflow_run.conclusion == 'failure' &&
+          steps.pr.outputs.found == 'true'
+        run: |
+          curl -X POST -H 'Content-type: application/json' --data '{
+            "attachments": [{
+              "color": "#ff0000",
+              "blocks": [
+                {"type": "header", "text": {"type": "plain_text", "text": "🚨 Dependency Update - CI Failed"}},
+                {"type": "section", "fields": [
+                  {"type": "mrkdwn", "text": "*Repository:*\n${{ github.repository }}"},
+                  {"type": "mrkdwn", "text": "*PR:*\n<${{ steps.pr.outputs.url }}|#${{ steps.pr.outputs.number }}>"}
+                ]},
+                {"type": "section", "text": {"type": "mrkdwn", "text": "*Author:* ${{ steps.pr.outputs.author }}\n${{ steps.pr.outputs.title }}\n\n<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.event.workflow_run.id }}|View CI Run>"}}
+              ]
+            }]
+          }' "$SLACK_WEBHOOK"
+        env:
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+
+      - name: Notify Slack - Major Update
+        if: |
+          github.event.workflow_run.conclusion == 'success' &&
+          steps.pr.outputs.found == 'true' &&
+          steps.pr.outputs.is_major == 'true'
+        run: |
+          curl -X POST -H 'Content-type: application/json' --data '{
+            "attachments": [{
+              "color": "#ffa500",
+              "blocks": [
+                {"type": "header", "text": {"type": "plain_text", "text": "⚠️ Major Update - Manual Review Required"}},
+                {"type": "section", "fields": [
+                  {"type": "mrkdwn", "text": "*Repository:*\n${{ github.repository }}"},
+                  {"type": "mrkdwn", "text": "*PR:*\n<${{ steps.pr.outputs.url }}|#${{ steps.pr.outputs.number }}>"}
+                ]},
+                {"type": "section", "text": {"type": "mrkdwn", "text": "*Author:* ${{ steps.pr.outputs.author }}\n${{ steps.pr.outputs.title }}\n\nReview changelog for breaking changes."}}
+              ]
+            }]
+          }' "$SLACK_WEBHOOK"
+        env:
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+
+      - name: Squash merge PR
+        id: merge
+        if: |
+          github.event.workflow_run.conclusion == 'success' &&
+          steps.pr.outputs.found == 'true' &&
+          steps.pr.outputs.is_major != 'true'
+        run: |
+          if gh pr merge ${{ steps.pr.outputs.number }} --squash --repo ${{ github.repository }}; then
+            echo "result=success" >> $GITHUB_OUTPUT
+          else
+            echo "result=failed" >> $GITHUB_OUTPUT
+          fi
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Notify Slack - Squash Merged
+        if: |
+          github.event.workflow_run.conclusion == 'success' &&
+          steps.pr.outputs.found == 'true' &&
+          steps.pr.outputs.is_major != 'true' &&
+          steps.merge.outputs.result == 'success'
+        run: |
+          curl -X POST -H 'Content-type: application/json' --data '{
+            "attachments": [{
+              "color": "#36a64f",
+              "blocks": [
+                {"type": "header", "text": {"type": "plain_text", "text": "✅ Dependency Update - Squash Merged"}},
+                {"type": "section", "fields": [
+                  {"type": "mrkdwn", "text": "*Repository:*\n${{ github.repository }}"},
+                  {"type": "mrkdwn", "text": "*PR:*\n<${{ steps.pr.outputs.url }}|#${{ steps.pr.outputs.number }}>"}
+                ]},
+                {"type": "section", "text": {"type": "mrkdwn", "text": "*Author:* ${{ steps.pr.outputs.author }}\n${{ steps.pr.outputs.title }}"}}
+              ]
+            }]
+          }' "$SLACK_WEBHOOK"
+        env:
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+
+      - name: Notify Slack - Merge Failed
+        if: |
+          github.event.workflow_run.conclusion == 'success' &&
+          steps.pr.outputs.found == 'true' &&
+          steps.pr.outputs.is_major != 'true' &&
+          steps.merge.outputs.result == 'failed'
+        run: |
+          curl -X POST -H 'Content-type: application/json' --data '{
+            "attachments": [{
+              "color": "#ff0000",
+              "blocks": [
+                {"type": "header", "text": {"type": "plain_text", "text": "🚨 Merge Failed"}},
+                {"type": "section", "fields": [
+                  {"type": "mrkdwn", "text": "*Repository:*\n${{ github.repository }}"},
+                  {"type": "mrkdwn", "text": "*PR:*\n<${{ steps.pr.outputs.url }}|#${{ steps.pr.outputs.number }}>"}
+                ]},
+                {"type": "section", "text": {"type": "mrkdwn", "text": "*Author:* ${{ steps.pr.outputs.author }}\n${{ steps.pr.outputs.title }}\n\nCould not merge PR. Manual intervention required."}}
+              ]
+            }]
+          }' "$SLACK_WEBHOOK"
+        env:
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+
+  notify-merged:
+    name: Notify Merged
+    runs-on: ubuntu-latest
+    if: |
+      github.event.workflow_run.conclusion == 'success' &&
+      github.event.workflow_run.event == 'push' &&
+      (contains(github.event.workflow_run.head_commit.message, 'dependabot') ||
+       contains(github.event.workflow_run.head_commit.message, 'cycode'))
+    steps:
+      - name: Send Slack notification
+        run: |
+          curl -X POST -H 'Content-type: application/json' --data '{
+            "attachments": [{
+              "color": "#2eb886",
+              "blocks": [
+                {"type": "header", "text": {"type": "plain_text", "text": "🎉 Dependencies Updated Successfully"}},
+                {"type": "section", "fields": [
+                  {"type": "mrkdwn", "text": "*Repository:*\n${{ github.repository }}"},
+                  {"type": "mrkdwn", "text": "*Commit:*\n<${{ github.server_url }}/${{ github.repository }}/commit/${{ github.event.workflow_run.head_sha }}|View>"}
+                ]}
+              ]
+            }]
+          }' "$SLACK_WEBHOOK"
+        env:
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+
