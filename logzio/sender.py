@@ -4,7 +4,7 @@ import json
 import sys
 from datetime import datetime
 from importlib.metadata import version
-from threading import Thread, enumerate
+from threading import Thread, Lock, enumerate
 from time import sleep
 
 import requests
@@ -54,6 +54,7 @@ class LogzioSender:
 
         # Create a queue to hold logs
         self.queue = queue.Queue()
+        self._flush_lock = Lock() 
         self._initialize_sending_thread()
 
     def __del__(self):
@@ -100,79 +101,83 @@ class LogzioSender:
                 sleep(self.logs_drain_timeout)
 
     def _flush_queue(self):
-        # Sending logs until queue is empty
-        while not self.queue.empty():
-            logs_list = self._get_messages_up_to_max_allowed_size()
-            self.stdout_logger.debug(
-                'Starting to drain %s logs to Logz.io', len(logs_list))
+        with self._flush_lock:
+            while not self.queue.empty():
+                logs_list = self._get_messages_up_to_max_allowed_size()
+                if not logs_list:
+                    break
+                self.stdout_logger.debug(
+                    'Starting to drain %s logs to Logz.io', len(logs_list))
 
-            # Not configurable from the outside
-            sleep_between_retries = self.retry_timeout
-            self.number_of_retries = self.number_of_retries
+                sleep_between_retries = self.retry_timeout
+                self.number_of_retries = self.number_of_retries
 
-            should_backup_to_disk = True
-            headers = {"Content-type": "text/plain", **SHIPPER_HEADER}
+                should_backup_to_disk = True
+                headers = {"Content-type": "text/plain", **SHIPPER_HEADER}
 
-            for current_try in range(self.number_of_retries):
-                should_retry = False
-                try:
-                    response = self.requests_session.post(
-                        self.url, headers=headers, data='\n'.join(logs_list),
-                        timeout=self.network_timeout)
-                    if response.status_code != 200:
-                        if response.status_code == 400:
-                            self.stdout_logger.info(
-                                'Got 400 code from Logz.io. This means that '
-                                'some of your logs are too big, or badly '
-                                'formatted. response: %s', response.text)
-                            should_backup_to_disk = False
-                            break
+                for current_try in range(self.number_of_retries):
+                    should_retry = False
+                    try:
+                        response = self.requests_session.post(
+                            self.url, headers=headers, data='\n'.join(logs_list),
+                            timeout=self.network_timeout)
+                        if response.status_code != 200:
+                            if response.status_code == 400:
+                                self.stdout_logger.info(
+                                    'Got 400 code from Logz.io. This means that '
+                                    'some of your logs are too big, or badly '
+                                    'formatted. response: %s', response.text)
+                                should_backup_to_disk = False
+                                break
 
-                        if response.status_code == 401:
-                            self.stdout_logger.info(
-                                'You are not authorized with Logz.io! Token '
-                                'OK? dropping logs...')
-                            should_backup_to_disk = False
-                            break
+                            if response.status_code == 401:
+                                self.stdout_logger.info(
+                                    'You are not authorized with Logz.io! Token '
+                                    'OK? dropping logs...')
+                                should_backup_to_disk = False
+                                break
+                            else:
+                                self.stdout_logger.info(
+                                    'Got %s while sending logs to Logz.io, '
+                                    'Try (%s/%s). Response: %s',
+                                    response.status_code,
+                                    current_try + 1,
+                                    self.number_of_retries,
+                                    response.text)
+                                should_retry = True
                         else:
-                            self.stdout_logger.info(
-                                'Got %s while sending logs to Logz.io, '
-                                'Try (%s/%s). Response: %s',
-                                response.status_code,
-                                current_try + 1,
-                                self.number_of_retries,
-                                response.text)
-                            should_retry = True
-                    else:
-                        self.stdout_logger.debug(
-                            'Successfully sent bulk of %s logs to '
-                            'Logz.io!', len(logs_list))
-                        should_backup_to_disk = False
-                        break
-                except Exception as e:
-                    self.stdout_logger.warning(
-                        'Got exception while sending logs to Logz.io, '
-                        'Try (%s/%s). Message: %s',
-                        current_try + 1, self.number_of_retries, e)
-                    should_retry = True
+                            self.stdout_logger.debug(
+                                'Successfully sent bulk of %s logs to '
+                                'Logz.io!', len(logs_list))
+                            should_backup_to_disk = False
+                            break
+                    except Exception as e:
+                        self.stdout_logger.warning(
+                            'Got exception while sending logs to Logz.io, '
+                            'Try (%s/%s). Message: %s',
+                            current_try + 1, self.number_of_retries, e)
+                        should_retry = True
 
-                if should_retry:
-                    sleep(sleep_between_retries)
+                    if should_retry:
+                        sleep(sleep_between_retries)
 
-            if should_backup_to_disk and self.backup_logs:
-                # Write to file
-                self.stdout_logger.error(
-                    'Could not send logs to Logz.io after %s tries, '
-                    'backing up to local file system', self.number_of_retries)
-                backup_logs(logs_list, self.stdout_logger)
+                if should_backup_to_disk and self.backup_logs:
+                    self.stdout_logger.error(
+                        'Could not send logs to Logz.io after %s tries, '
+                        'backing up to local file system', self.number_of_retries)
+                    backup_logs(logs_list, self.stdout_logger)
 
-            del logs_list
+                del logs_list
 
     def _get_messages_up_to_max_allowed_size(self):
         logs_list = []
         current_size = 0
-        while not self.queue.empty():
-            current_log = self.queue.get()
+        while True:
+            try:
+                current_log = self.queue.get(block=False)
+            except queue.Empty:
+                break
+
             try:
                 current_size += sys.getsizeof(current_log)
             except TypeError:
