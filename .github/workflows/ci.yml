@@ -1,0 +1,106 @@
+name: CI
+
+on:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: Test (Python ${{ matrix.python-version }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.9", "3.10", "3.11", "3.12", "3.13", "3.14"]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v6
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: "pip"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pytest pytest-cov future requests
+
+      - name: Install package in development mode
+        run: pip install -e .
+
+      - name: Run unit tests with coverage
+        run: |
+          pytest --cov-report=term-missing --cov=logzio tests/ -v --ignore=tests/e2e/
+
+      - name: Upload coverage report
+        if: matrix.python-version == '3.11'
+        uses: actions/upload-artifact@v6
+        with:
+          name: coverage-report
+          path: .coverage
+          retention-days: 5
+
+  e2e-integration:
+    name: E2E Integration Test
+    runs-on: ubuntu-latest
+    needs: [test]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.11"
+          cache: "pip"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pytest requests
+
+      - name: Install package in development mode
+        run: pip install -e .
+
+
+      - name: Generate unique ENV_ID
+        id: env-id
+        run: echo "value=e2e-${{ github.run_id }}-${{ github.run_attempt }}" >> $GITHUB_OUTPUT
+
+      - name: Run E2E integration test
+        env:
+          LOGZIO_TOKEN: ${{ secrets.LOGZIO_TOKEN }}
+          LOGZIO_API_KEY: ${{ secrets.LOGZIO_API_KEY }}
+          ENV_ID: ${{ steps.env-id.outputs.value }}
+        run: |
+          pytest tests/e2e/test_logzio_e2e.py -v --tb=long
+
+  ci-success:
+    name: CI Success
+    runs-on: ubuntu-latest
+    needs: [test, e2e-integration]
+    if: always()
+    steps:
+      - name: Check all jobs passed
+        run: |
+          if [[ "${{ needs.test.result }}" != "success" ]]; then
+            echo "Test job failed"
+            exit 1
+          fi
+          if [[ "${{ needs.e2e-integration.result }}" != "success" ]]; then
+            echo "E2E integration job failed"
+            exit 1
+          fi
+          echo "All CI checks passed! ✅"
