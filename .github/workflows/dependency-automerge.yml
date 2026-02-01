@@ -19,7 +19,7 @@ jobs:
     runs-on: ubuntu-latest
     if: |
       (github.event.workflow_run.actor.login == 'dependabot[bot]' ||
-       github.event.workflow_run.actor.login == 'cycode-bot') &&
+       github.event.workflow_run.actor.login == 'cycode-security[bot]') &&
       github.event.workflow_run.event == 'pull_request'
 
     steps:
