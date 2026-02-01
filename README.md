@@ -40,7 +40,7 @@ pip install logzio-python-handler[opentelemetry-logging]
 
 ## Tested Python Versions
 
-Travis CI will build this handler and test against:
+CI will build this handler and test against:
 
 - "3.5"
 - "3.6"
@@ -49,6 +49,9 @@ Travis CI will build this handler and test against:
 - "3.9"
 - "3.10"
 - "3.11"
+- "3.12"
+- "3.13"
+- "3.14"
 
 We can't ensure compatibility to any other version, as we can't test it automatically.
 
@@ -321,7 +324,16 @@ LOGGING = {
 ```
 
 ## Release Notes
-
+- 4.1.7
+    - `logzio/sender.py`: 
+      - Added `Lock` import and `_flush_lock` instance variable
+      - Modified `_flush_queue()` to use lock for thread-safe flushing
+      - Modified `_get_messages_up_to_max_allowed_size()` to use non-blocking `queue.get(block=False)`
+    - `tests/test_thread_safety.py`: Added comprehensive tests for thread safety
+- 4.1.6
+    - Update dependencies
+- 4.1.5
+    - Update dependencies
 - 4.1.4
     - Upgrade trace context opentelemetry-instrumentation-logging package version from v0.39b0 to v4.50b0
 - 4.1.3

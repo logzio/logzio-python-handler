@@ -8,8 +8,10 @@ setup(
     description="Logging handler to send logs to your Logz.io account with bulk SSL",
     keywords="logging handler logz.io bulk https",
     author="roiravhon",
-    maintainer="tamir-michaeli",
-    mail="tamir.michaeli@logz.io",
+    mail="help@logz.io",
+    author_email="help@logz.io",
+    maintainer="yotam-loewenbach",
+    maintainer_email="yotam.loewenbach@logz.io",
     url="https://github.com/logzio/logzio-python-handler/",
     license="Apache License 2",
     packages=find_packages(),
@@ -18,7 +20,7 @@ setup(
         "protobuf>=3.20.2"
     ],
     extras_require={
-        "opentelemetry-logging": ["opentelemetry-instrumentation-logging==0.45b0"]
+        "opentelemetry-logging": ["opentelemetry-instrumentation-logging==0.60b1"]
     },
     test_requires=[
         "future"
